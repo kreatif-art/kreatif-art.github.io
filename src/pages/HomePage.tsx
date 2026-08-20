@@ -6,6 +6,7 @@ import { useFadeUpRoot } from '@/hooks/useFadeUp';
 import { ContentCard } from '@/components/ContentCard';
 import { DailyShowcase } from '@/components/DailyShowcase';
 import { HorizontalRail } from '@/components/HorizontalRail';
+import { SoundSightChapter } from '@/components/SoundSightChapter';
 import { LoadingState, EmptyState } from '@/components/States';
 import { useAuth } from '@/context/AuthContext';
 
@@ -104,12 +105,12 @@ export function HomePage() {
       </section>
 
       {/* ===== Sound rail (→) ===== */}
-      <section className="border-t border-white/[0.04] py-8" data-fade-up data-delay="1">
-        <div className="mx-auto mb-4 flex max-w-7xl items-end justify-between px-4 sm:px-6">
+      <section className="relative border-t border-white/[0.04] py-8" data-fade-up data-delay="1">
+        <div className="mx-auto mb-3 flex max-w-7xl items-end justify-between px-4 sm:px-6">
           <div>
             <p className="label-caps mb-1 text-orange-400/70">Scroll into sound</p>
             <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
-              Latest <span className="font-musicnet not-italic text-orange-300">music</span>
+              <span className="font-musicnet not-italic text-orange-300">Music</span>
             </h2>
           </div>
           <Link
@@ -136,7 +137,7 @@ export function HomePage() {
             />
           </div>
         ) : (
-          <HorizontalRail tone="music">
+          <HorizontalRail tone="music" sideLabel="MUSIC">
             {musicItems.map((item) => (
               <div key={item.id} className="rail-card">
                 <ContentCard item={item} />
@@ -146,13 +147,16 @@ export function HomePage() {
         )}
       </section>
 
+      {/* ===== Full-page horizontal chapter ===== */}
+      <SoundSightChapter />
+
       {/* ===== Sight rail (←) ===== */}
-      <section className="border-t border-white/[0.04] py-8" data-fade-up data-delay="2">
-        <div className="mx-auto mb-4 flex max-w-7xl items-end justify-between px-4 sm:px-6">
+      <section className="relative border-t border-white/[0.04] py-8" data-fade-up data-delay="2">
+        <div className="mx-auto mb-3 flex max-w-7xl items-end justify-between px-4 sm:px-6">
           <div>
             <p className="label-caps mb-1 text-pink-400/70">Scroll into sight</p>
             <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
-              Latest <span className="font-arthure not-italic text-pink-300/90">art</span>
+              <span className="font-arthure not-italic text-pink-300/90">Art</span>
             </h2>
           </div>
           <Link
@@ -179,7 +183,7 @@ export function HomePage() {
             />
           </div>
         ) : (
-          <HorizontalRail tone="art">
+          <HorizontalRail tone="art" sideLabel="ART">
             {artItems.map((item) => (
               <div key={item.id} className="rail-card">
                 <ContentCard item={item} />

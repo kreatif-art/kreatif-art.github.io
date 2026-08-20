@@ -112,7 +112,7 @@ export function BrowsePage({ type }: { type: 'music' | 'art' }) {
         </div>
       ) : (
         <>
-          <HorizontalRail tone={isMusic ? 'music' : 'art'}>
+          <HorizontalRail tone={isMusic ? 'music' : 'art'} sideLabel={isMusic ? 'MUSIC' : 'ART'}>
             {items.map((item) => (
               <div key={item.id} className="rail-card">
                 <ContentCard item={item} />
