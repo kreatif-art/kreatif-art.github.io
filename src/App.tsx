@@ -4,6 +4,7 @@ import { PlayerProvider } from '@/context/PlayerContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MiniPlayer } from '@/components/MiniPlayer';
+import { SynestheticBackground } from '@/components/SynestheticBackground';
 import { ProtectedRoute, AdminRoute, PublicOnlyRoute } from '@/components/ProtectedRoute';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
@@ -22,11 +23,14 @@ import { PrivacyPage } from '@/pages/PrivacyPage';
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-950">
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <MiniPlayer />
+    <div className="relative flex min-h-screen flex-col bg-transparent">
+      <SynestheticBackground />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <MiniPlayer />
+      </div>
     </div>
   );
 }

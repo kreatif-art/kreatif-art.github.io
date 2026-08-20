@@ -12,9 +12,9 @@ export function HomePage() {
   const { user, profile } = useAuth();
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <div className="min-h-screen bg-transparent">
       {/* ===== Hero ===== */}
-      <section className="relative border-b border-neutral-800">
+      <section className="relative border-b border-neutral-800/60">
         {/* Subtle ambient gradient */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div
