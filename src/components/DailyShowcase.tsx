@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Pause, Music, Image as ImageIcon } from 'lucide-react';
+import { Play, Pause, Music } from 'lucide-react';
 import { useContent } from '@/hooks/useContent';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn } from '@/lib/utils';
@@ -14,14 +14,14 @@ function pickDaily(items: ContentItem[], salt: number): ContentItem | null {
 }
 
 function Waveform({ active }: { active: boolean }) {
-  const bars = 20;
+  const bars = 16;
   return (
-    <div className="flex h-8 items-end justify-center gap-[2px]" aria-hidden>
+    <div className="flex h-6 items-end justify-center gap-[2px]" aria-hidden>
       {Array.from({ length: bars }).map((_, i) => (
         <span
           key={i}
-          className={cn('wave-bar w-[2.5px] rounded-full bg-white/90', active && 'wave-bar--on')}
-          style={{ animationDelay: `${i * 0.045}s` }}
+          className={cn('wave-bar w-[2px] rounded-full bg-orange-300/90', active && 'wave-bar--on')}
+          style={{ animationDelay: `${i * 0.05}s` }}
         />
       ))}
     </div>
@@ -29,8 +29,7 @@ function Waveform({ active }: { active: boolean }) {
 }
 
 /**
- * Stacked, overlapping "of the day" cards — music + art at once.
- * Front card tilts; back card peeks. Play triggers waveform on the music card.
+ * Featured art of the day (large) + music of the day as a spinning CD disc.
  */
 export function DailyShowcase() {
   const { items: musicItems, loading: musicLoading } = useContent({ type: 'music', pageSize: 20 });
@@ -41,6 +40,8 @@ export function DailyShowcase() {
   const art = useMemo(() => pickDaily(artItems, 13), [artItems]);
 
   const isDailyPlaying = !!(music && currentTrack?.id === music.id && isPlaying);
+  const musicCover = music?.cover_image_url || music?.file_url;
+  const artCover = art?.file_url;
 
   const handlePlay = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -50,136 +51,120 @@ export function DailyShowcase() {
     else play(music);
   };
 
-  const loading = musicLoading || artLoading;
-  const musicCover = music?.cover_image_url || music?.file_url;
-  const artCover = art?.file_url;
-
-  if (loading) {
+  if (musicLoading || artLoading) {
     return (
-      <div className="flex h-[420px] items-center justify-center text-sm text-neutral-500">
+      <div className="flex h-[380px] items-center justify-center text-sm text-neutral-500">
         Loading today&apos;s picks…
       </div>
     );
   }
 
-  if (!music && !art) {
-    return (
-      <div className="flex h-[320px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-sm text-neutral-500">
-        No content yet for today&apos;s picks.
-      </div>
-    );
-  }
-
   return (
-    <div className="daily-stack relative mx-auto w-full max-w-[300px] select-none sm:max-w-[320px]">
-      <p className="label-caps mb-5 text-center text-neutral-500">Today&apos;s picks</p>
+    <div className="relative w-full max-w-md mx-auto lg:max-w-none">
+      <p className="label-caps mb-4 text-neutral-500">Today&apos;s picks</p>
 
-      <div className="relative mx-auto aspect-[3/4] w-full">
-        {/* Art card — back, offset */}
-        {art && (
-          <Link
-            to={`/content/${art.id}`}
-            className="daily-card daily-card--back group absolute inset-0 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/50"
-            style={{
-              transform: 'rotate(-7deg) translate(-10%, 6%) scale(0.94)',
-            }}
-          >
-            <div className="relative h-full w-full bg-neutral-900">
-              {artCover ? (
-                <img
-                  src={artCover}
-                  alt={art.title}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center">
-                  <ImageIcon className="h-10 w-10 text-neutral-600" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-4">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-pink-200/90 backdrop-blur-md">
-                  Art of the day
-                </span>
-                <h3 className="mt-2 truncate text-sm font-medium text-white">{art.title}</h3>
-                <p className="truncate text-xs text-neutral-400">
-                  {art.profiles?.display_name || 'Kreatif'}
-                </p>
+      {/* Featured art */}
+      {art ? (
+        <Link
+          to={`/content/${art.id}`}
+          className="group relative block overflow-hidden rounded-2xl border border-white/[0.1] bg-neutral-900 shadow-[0_24px_50px_rgba(0,0,0,0.45)]"
+        >
+          <div className="relative aspect-[4/5] w-full sm:aspect-[5/6]">
+            {artCover ? (
+              <img
+                src={artCover}
+                alt={art.title}
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center bg-neutral-900 text-neutral-600">
+                Art
               </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-5">
+              <span className="label-caps text-pink-200/90">Art of the day</span>
+              <h3 className="mt-2 text-xl font-medium tracking-tight text-white sm:text-2xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
+                {art.title}
+              </h3>
+              <p className="mt-1 text-sm text-neutral-300">
+                {art.profiles?.display_name || 'Kreatif'}
+              </p>
             </div>
-          </Link>
-        )}
+          </div>
+        </Link>
+      ) : (
+        <div className="flex aspect-[4/5] items-center justify-center rounded-2xl border border-white/10 text-sm text-neutral-500">
+          No art pick today
+        </div>
+      )}
 
-        {/* Music card — front */}
-        {music && (
-          <div
-            className="daily-card daily-card--front absolute inset-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
-            style={{
-              transform: 'rotate(4deg) translate(8%, -2%)',
-            }}
-          >
-            <div className="relative flex h-full flex-col bg-neutral-950">
-              <div className="relative min-h-0 flex-1 overflow-hidden">
-                {musicCover ? (
-                  <img src={musicCover} alt={music.title} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full items-center justify-center bg-neutral-900">
-                    <Music className="h-10 w-10 text-neutral-600" />
-                  </div>
+      {/* Spinning CD — music of the day, overlaps bottom-right of art */}
+      {music && (
+        <div className="absolute -bottom-6 -right-2 z-10 sm:-bottom-8 sm:-right-4">
+          <div className="relative flex flex-col items-center">
+            <button
+              type="button"
+              onClick={handlePlay}
+              className="group relative block h-28 w-28 sm:h-32 sm:w-32"
+              aria-label={isDailyPlaying ? 'Pause music of the day' : 'Play music of the day'}
+            >
+              {/* disc */}
+              <div
+                className={cn(
+                  'cd-disc absolute inset-0 rounded-full bg-neutral-950 shadow-[0_12px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/20',
+                  isDailyPlaying && 'cd-disc--spinning',
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-
-                <div
-                  className={cn(
-                    'pointer-events-none absolute inset-0 transition-opacity duration-500',
-                    isDailyPlaying ? 'opacity-100' : 'opacity-0',
-                  )}
-                  style={{
-                    background:
-                      'radial-gradient(ellipse at 50% 80%, rgba(251,146,60,0.25), transparent 60%)',
-                  }}
-                />
-
-                <div className="absolute inset-x-0 bottom-0 p-4 pt-12">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/45 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-orange-200/90 backdrop-blur-md">
-                    Music of the day
-                  </span>
-                  <Link to={`/content/${music.id}`} className="mt-2 block">
-                    <h3 className="truncate text-base font-medium text-white hover:underline">
-                      {music.title}
-                    </h3>
-                    <p className="truncate text-xs text-neutral-400">
-                      {music.profiles?.display_name || 'Kreatif'}
-                    </p>
-                  </Link>
-
-                  <div className="mt-4 flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handlePlay}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
-                      aria-label={isDailyPlaying ? 'Pause' : 'Play'}
-                    >
-                      {isDailyPlaying ? (
-                        <Pause className="h-4 w-4" />
-                      ) : (
-                        <Play className="h-4 w-4 translate-x-0.5" />
-                      )}
-                    </button>
-                    <div className="min-w-0 flex-1">
-                      <Waveform active={isDailyPlaying} />
+              >
+                {/* grooves */}
+                <div className="absolute inset-[10%] rounded-full border border-white/[0.07]" />
+                <div className="absolute inset-[18%] rounded-full border border-white/[0.06]" />
+                <div className="absolute inset-[26%] rounded-full border border-white/[0.05]" />
+                <div className="absolute inset-[34%] rounded-full border border-white/[0.04]" />
+                {/* label */}
+                <div className="absolute inset-[38%] overflow-hidden rounded-full border border-white/15 bg-gradient-to-br from-orange-500 to-pink-600 shadow-inner">
+                  {musicCover ? (
+                    <img src={musicCover} alt="" className="h-full w-full object-cover opacity-90" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Music className="h-4 w-4 text-white/80" />
                     </div>
-                  </div>
+                  )}
                 </div>
+                <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-950 ring-1 ring-white/25" />
+              </div>
+              {/* play cue on hover when paused */}
+              {!isDailyPlaying && (
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-neutral-900 shadow-lg">
+                    <Play className="h-4 w-4 translate-x-0.5" />
+                  </span>
+                </span>
+              )}
+              {isDailyPlaying && (
+                <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm">
+                    <Pause className="h-3.5 w-3.5" />
+                  </span>
+                </span>
+              )}
+            </button>
+
+            <div className="mt-2 max-w-[9rem] text-center">
+              <p className="label-caps text-[9px] text-orange-300/80">Music of the day</p>
+              <Link to={`/content/${music.id}`} className="mt-0.5 block truncate text-xs font-medium text-white hover:underline">
+                {music.title}
+              </Link>
+              <div className="mt-1.5 flex justify-center">
+                <Waveform active={isDailyPlaying} />
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      <p className="mt-6 text-center text-[11px] text-neutral-600">
-        Hover the back card to lift it · Play for soundwaves
-      </p>
+      {/* spacer so CD doesn't collide with content below on mobile */}
+      <div className="h-16 sm:h-12" />
     </div>
   );
 }

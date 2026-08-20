@@ -130,6 +130,24 @@
     animation: wave-bar 0.7s ease-in-out infinite;
   }
 
+  /* ---- Spinning CD (music of the day) ---- */
+  @keyframes cd-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .cd-disc {
+    transition: box-shadow 0.4s ease;
+  }
+  .cd-disc--spinning {
+    animation: cd-spin 4s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cd-disc--spinning {
+      animation: none;
+    }
+  }
+
+
   /* ---- Glassmorphic card shell (Step B) ---- */
   .glass-card {
     -webkit-backdrop-filter: blur(16px);
