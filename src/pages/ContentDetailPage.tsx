@@ -47,7 +47,7 @@ export function ContentDetailPage() {
     const { data, error: queryError } = await supabase
       .from('content')
       .select(
-        'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre(id, name, type, sort_order)',
+        'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre:genres(id, name, type, sort_order)',
       )
       .eq('id', id)
       .maybeSingle();

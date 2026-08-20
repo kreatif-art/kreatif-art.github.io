@@ -49,7 +49,7 @@ export function useContent({
       let query = supabase
         .from('content')
         .select(
-          'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre(id, name, type, sort_order)',
+          'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre:genres(id, name, type, sort_order)',
           { count: 'exact' },
         )
         .eq('visibility', 'visible')
