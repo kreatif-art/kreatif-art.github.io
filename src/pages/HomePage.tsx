@@ -29,7 +29,7 @@ export function HomePage() {
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:py-32">
           <div className="max-w-3xl">
             <p className="mb-5 text-xs font-medium uppercase tracking-[0.2em] text-orange-400/90">
-              Independent creators
+              Original work only
             </p>
 
             <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">

@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MiniPlayer } from '@/components/MiniPlayer';
 import { ProtectedRoute, AdminRoute, PublicOnlyRoute } from '@/components/ProtectedRoute';
-import { HomePage } from '@/pages/HomePage';
+import { HomePage } from './pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
 import { SignupPage } from '@/pages/SignupPage';
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage';
