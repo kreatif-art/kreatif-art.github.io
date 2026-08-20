@@ -104,21 +104,16 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ===== Sound rail (→) ===== */}
-      <section className="relative border-t border-white/[0.04] py-8" data-fade-up data-delay="1">
-        <div className="mx-auto mb-3 flex max-w-7xl items-end justify-between px-4 sm:px-6">
-          <div>
-            <p className="label-caps mb-1 text-orange-400/70">Scroll into sound</p>
-            <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
-              <span className="font-musicnet not-italic text-orange-300">Music</span>
-            </h2>
-          </div>
-          <Link
-            to="/browse/music"
-            className="group flex items-center gap-1 text-sm text-neutral-400 transition-colors hover:text-white"
-          >
-            Explore
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+      <SoundSightChapter />
+
+      {/* ===== Music rail ===== */}
+      <section className="relative border-t border-white/[0.04] py-6" data-fade-up data-delay="1">
+        <div className="mx-auto mb-2 flex max-w-7xl items-center justify-between px-4 sm:px-6">
+          <h2 className="text-2xl tracking-tight">
+            <span className="font-musicnet not-italic text-orange-300">Music</span>
+          </h2>
+          <Link to="/browse/music" className="text-xs uppercase tracking-[0.14em] text-neutral-500 hover:text-white">
+            All music
           </Link>
         </div>
 
@@ -147,24 +142,14 @@ export function HomePage() {
         )}
       </section>
 
-      {/* ===== Full-page horizontal chapter ===== */}
-      <SoundSightChapter />
-
-      {/* ===== Sight rail (←) ===== */}
-      <section className="relative border-t border-white/[0.04] py-8" data-fade-up data-delay="2">
-        <div className="mx-auto mb-3 flex max-w-7xl items-end justify-between px-4 sm:px-6">
-          <div>
-            <p className="label-caps mb-1 text-pink-400/70">Scroll into sight</p>
-            <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
-              <span className="font-arthure not-italic text-pink-300/90">Art</span>
-            </h2>
-          </div>
-          <Link
-            to="/browse/art"
-            className="group flex items-center gap-1 text-sm text-neutral-400 transition-colors hover:text-white"
-          >
-            Explore
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+      {/* ===== Art rail ===== */}
+      <section className="relative border-t border-white/[0.04] py-6" data-fade-up data-delay="2">
+        <div className="mx-auto mb-2 flex max-w-7xl items-center justify-between px-4 sm:px-6">
+          <h2 className="text-2xl tracking-tight">
+            <span className="font-arthure not-italic text-pink-300/90">Art</span>
+          </h2>
+          <Link to="/browse/art" className="text-xs uppercase tracking-[0.14em] text-neutral-500 hover:text-white">
+            All art
           </Link>
         </div>
 

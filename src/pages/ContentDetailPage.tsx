@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, type TouchEvent } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, Flag, ArrowLeft, Play, Pause, Music, Share2, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +27,9 @@ export function ContentDetailPage() {
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [prevId, setPrevId] = useState<string | null>(null);
+  const [nextId, setNextId] = useState<string | null>(null);
+  const swipeRef = useRef<{ x: number; y: number } | null>(null);
 
   const isMusic = item?.type === 'music';
   const isCurrent = currentTrack?.id === item?.id;
@@ -92,6 +95,35 @@ export function ContentDetailPage() {
     fetchContent();
   }, [fetchContent]);
 
+  // Adjacent pieces of the same type (for swipe navigation)
+  useEffect(() => {
+    if (!item) {
+      setPrevId(null);
+      setNextId(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from('content')
+        .select('id')
+        .eq('type', item.type)
+        .eq('visibility', 'visible')
+        .order('created_at', { ascending: false })
+        .limit(80);
+      if (cancelled || !data?.length) return;
+      const ids = data.map((r) => r.id as string);
+      const idx = ids.indexOf(item.id);
+      if (idx === -1) return;
+      setPrevId(idx > 0 ? ids[idx - 1] : null);
+      setNextId(idx < ids.length - 1 ? ids[idx + 1] : null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [item]);
+
+
   const handleLike = async () => {
     if (!user || !item) return;
     if (isLiked) {
@@ -144,12 +176,58 @@ export function ContentDetailPage() {
   const artist = item.profiles as unknown as Profile;
   const moreFromArtist = moreItems.filter((m) => m.user_id !== item.user_id).slice(0, 4);
 
+  const goPrev = () => { if (prevId) navigate(`/content/${prevId}`); };
+  const goNext = () => { if (nextId) navigate(`/content/${nextId}`); };
+
+  const onTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    const touch = e.changedTouches[0];
+    swipeRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const onTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
+    if (!swipeRef.current) return;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - swipeRef.current.x;
+    const dy = touch.clientY - swipeRef.current.y;
+    swipeRef.current = null;
+    if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    // Swipe left → next; swipe right → previous
+    if (dx < 0) goNext();
+    else goPrev();
+  };
+
   return (
-    <div className="min-h-screen bg-neutral-950 pb-24">
+    <div
+      className="min-h-screen bg-neutral-950 pb-24 touch-pan-y"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
-        <Link to={isMusic ? '/browse/music' : '/browse/art'} className="mb-6 inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-200">
-          <ArrowLeft className="h-4 w-4" /> Back to {isMusic ? 'Music' : 'Art'}
-        </Link>
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <Link to={isMusic ? '/browse/music' : '/browse/art'} className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-200">
+            <ArrowLeft className="h-4 w-4" /> Back to {isMusic ? 'Music' : 'Art'}
+          </Link>
+          <p className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+            Swipe for next {isMusic ? 'track' : 'piece'}
+          </p>
+        </div>
+        <div className="mb-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={goPrev}
+            disabled={!prevId}
+            className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-white disabled:opacity-30"
+          >
+            ← Previous
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={!nextId}
+            className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:text-white disabled:opacity-30"
+          >
+            Next →
+          </button>
+        </div>
 
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Media */}
