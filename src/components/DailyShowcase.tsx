@@ -60,16 +60,16 @@ export function DailyShowcase() {
   }
 
   return (
-    <div className="relative w-full max-w-[33.6rem] mx-auto lg:max-w-none scale-100 lg:origin-top">
-      <p className="label-caps mb-4 text-neutral-500">Today&apos;s picks</p>
+    <div className="relative w-full">
+      <p className="label-caps mb-2 text-neutral-500">Today&apos;s picks</p>
 
       {/* Featured art */}
       {art ? (
         <Link
           to={`/content/${art.id}`}
-          className="group relative block overflow-hidden rounded-2xl border border-white/[0.1] bg-neutral-900 shadow-[0_24px_50px_rgba(0,0,0,0.45)] origin-top scale-[1.2] sm:scale-[1.2]"
+          className="group relative block overflow-hidden rounded-2xl border border-white/[0.1] bg-neutral-900 shadow-[0_16px_40px_rgba(0,0,0,0.4)]"
         >
-          <div className="relative aspect-[4/5] w-full sm:aspect-[5/6]">
+          <div className="relative h-[min(46vh,380px)] w-full">
             {artCover ? (
               <img
                 src={artCover}
@@ -82,9 +82,9 @@ export function DailyShowcase() {
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-5">
+            <div className="absolute inset-x-0 bottom-0 p-4">
               <span className="label-caps text-pink-200/90">Art of the day</span>
-              <h3 className="mt-2 text-xl font-medium tracking-tight text-white sm:text-2xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
+              <h3 className="mt-1 text-lg font-medium tracking-tight text-white sm:text-xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
                 {art.title}
               </h3>
               <p className="mt-1 text-sm text-neutral-300">
@@ -101,12 +101,12 @@ export function DailyShowcase() {
 
       {/* Spinning CD — music of the day, overlaps bottom-right of art */}
       {music && (
-        <div className="absolute -bottom-2 right-0 z-10 sm:bottom-0 sm:-right-2">
+        <div className="absolute bottom-3 right-3 z-10">
           <div className="relative flex flex-col items-center">
             <button
               type="button"
               onClick={handlePlay}
-              className="group relative block h-28 w-28 sm:h-32 sm:w-32"
+              className="group relative block h-24 w-24 sm:h-28 sm:w-28"
               aria-label={isDailyPlaying ? 'Pause music of the day' : 'Play music of the day'}
             >
               {/* disc */}
@@ -164,7 +164,7 @@ export function DailyShowcase() {
       )}
 
       {/* spacer so CD doesn't collide with content below on mobile */}
-      <div className="h-24 sm:h-28" />
+      <div className="h-2" />
     </div>
   );
 }
