@@ -21,18 +21,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Ensure Vite entry index.html
+        run: |
+          cat > index.html << 'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>Kreatif</title>
+            </head>
+            <body>
+              <div id="root"></div>
+              <script type="module" src="/src/main.tsx"></script>
+            </body>
+          </html>
+          HTML
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # no cache - force clean install
-
-      - name: Verify HomePage source
-        run: |
-          echo "=== HomePage.tsx head ==="
-          head -40 src/pages/HomePage.tsx
-          echo "=== grep marker ==="
-          grep -n "BUILD_MARKER_V2\|A space for original\|Where artists" src/pages/HomePage.tsx || true
 
       - name: Install
         run: npm ci
@@ -40,15 +50,10 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify build output
+      - name: Verify card effects in bundle
         run: |
-          echo "=== dist files ==="
-          ls -la dist/
-          ls -la dist/assets/ || true
-          echo "=== search new copy in JS ==="
-          grep -o "A space for original" dist/assets/*.js | head -3 || echo "NEW TEXT MISSING"
-          grep -o "Where artists and fans connect" dist/assets/*.js | head -3 || echo "old text absent (good)"
-          grep -o "BUILD_MARKER_V2" dist/assets/*.js | head -3 || echo "marker not in bundle (expected if stripped)"
+          grep -o "vinyl-disc\|rotateY\|perspective" dist/assets/*.js | head -5 || true
+          grep -o "vinyl-spin\|glass-card" dist/assets/*.css | head -5 || true
 
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
