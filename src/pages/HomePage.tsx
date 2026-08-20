@@ -1,18 +1,12 @@
 /* BUILD_MARKER_V2 */
 import { Link } from 'react-router-dom';
 import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users } from 'lucide-react';
-import { useContent } from '@/hooks/useContent';
 import { useFadeUpRoot } from '@/hooks/useFadeUp';
-import { ContentCard } from '@/components/ContentCard';
 import { DailyShowcase } from '@/components/DailyShowcase';
-import { HorizontalRail } from '@/components/HorizontalRail';
 import { SoundSightChapter } from '@/components/SoundSightChapter';
-import { LoadingState, EmptyState } from '@/components/States';
 import { useAuth } from '@/context/AuthContext';
 
 export function HomePage() {
-  const { items: musicItems, loading: musicLoading } = useContent({ type: 'music', pageSize: 6 });
-  const { items: artItems, loading: artLoading } = useContent({ type: 'art', pageSize: 6 });
   const { user, profile } = useAuth();
   const rootRef = useFadeUpRoot<HTMLDivElement>();
 
@@ -106,77 +100,7 @@ export function HomePage() {
 
       <SoundSightChapter />
 
-      {/* ===== Music rail ===== */}
-      <section className="relative border-t border-white/[0.04] py-6" data-fade-up data-delay="1">
-        <div className="mx-auto mb-2 flex max-w-7xl items-center justify-between px-4 sm:px-6">
-          <h2 className="text-2xl tracking-tight">
-            <span className="font-musicnet not-italic text-orange-300">Music</span>
-          </h2>
-          <Link to="/browse/music" className="text-xs uppercase tracking-[0.14em] text-neutral-500 hover:text-white">
-            All music
-          </Link>
-        </div>
 
-        {musicLoading ? (
-          <div className="px-4"><LoadingState /></div>
-        ) : musicItems.length === 0 ? (
-          <div className="px-4">
-            <EmptyState
-              title="No music yet"
-              message="Be the first to share a track."
-              action={
-                <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
-                  Upload
-                </Link>
-              }
-            />
-          </div>
-        ) : (
-          <HorizontalRail tone="music" sideLabel="MUSIC">
-            {musicItems.map((item) => (
-              <div key={item.id} className="rail-card">
-                <ContentCard item={item} />
-              </div>
-            ))}
-          </HorizontalRail>
-        )}
-      </section>
-
-      {/* ===== Art rail ===== */}
-      <section className="relative border-t border-white/[0.04] py-6" data-fade-up data-delay="2">
-        <div className="mx-auto mb-2 flex max-w-7xl items-center justify-between px-4 sm:px-6">
-          <h2 className="text-2xl tracking-tight">
-            <span className="font-arthure not-italic text-pink-300/90">Art</span>
-          </h2>
-          <Link to="/browse/art" className="text-xs uppercase tracking-[0.14em] text-neutral-500 hover:text-white">
-            All art
-          </Link>
-        </div>
-
-        {artLoading ? (
-          <div className="px-4"><LoadingState /></div>
-        ) : artItems.length === 0 ? (
-          <div className="px-4">
-            <EmptyState
-              title="No art yet"
-              message="Be the first to share artwork."
-              action={
-                <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
-                  Upload
-                </Link>
-              }
-            />
-          </div>
-        ) : (
-          <HorizontalRail tone="art" sideLabel="ART">
-            {artItems.map((item) => (
-              <div key={item.id} className="rail-card">
-                <ContentCard item={item} />
-              </div>
-            ))}
-          </HorizontalRail>
-        )}
-      </section>
 
       {/* ===== Leaderboard CTA ===== */}
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6" data-fade-up data-delay="3">
