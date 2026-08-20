@@ -1,3 +1,4 @@
+/* BUILD_MARKER_V2 */
 import { Link } from 'react-router-dom';
 import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users } from 'lucide-react';
 import { useContent } from '@/hooks/useContent';
