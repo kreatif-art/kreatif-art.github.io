@@ -18,6 +18,9 @@ export function Footer() {
             <Link to="/leaderboard" className="hover:text-neutral-200">
               Leaderboard
             </Link>
+            <Link to="/how-to-upload" className="hover:text-neutral-200">
+              How to upload
+            </Link>
             <Link to="/terms" className="hover:text-neutral-200">
               Terms
             </Link>

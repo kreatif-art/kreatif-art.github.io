@@ -22,6 +22,7 @@ import { UploadPage } from '@/pages/UploadPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { TermsPage } from '@/pages/TermsPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
+import { HowToUploadPage } from '@/pages/HowToUploadPage';
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -65,6 +66,7 @@ function App() {
                   <Route path="/search" element={<SearchPage />} />
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/how-to-upload" element={<HowToUploadPage />} />
                   <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                   <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
                   <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
