@@ -88,17 +88,31 @@
     pointer-events: none;
   }
 
-  /* ---- Flip book for daily showcase ---- */
-  .flip-book {
-    perspective: 1200px;
+  /* ---- Overlapping daily cards stack ---- */
+  .daily-stack {
+    perspective: 1400px;
   }
-  .flip-book-inner {
-    transition: transform 0.32s var(--ease-out-expo), opacity 0.32s ease;
-    transform-origin: center center;
+  .daily-card {
+    transition: transform 0.55s var(--ease-out-expo), box-shadow 0.45s ease, z-index 0s;
+    will-change: transform;
   }
-  .flip-book--flip .flip-book-inner {
-    transform: rotateY(90deg) scale(0.96);
-    opacity: 0.35;
+  .daily-card--back {
+    z-index: 1;
+  }
+  .daily-card--front {
+    z-index: 2;
+  }
+  .daily-stack:has(.daily-card--back:hover) .daily-card--back {
+    z-index: 3;
+    transform: rotate(-2deg) translate(-4%, 0%) scale(1) !important;
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55);
+  }
+  .daily-stack:has(.daily-card--back:hover) .daily-card--front {
+    transform: rotate(8deg) translate(14%, 4%) scale(0.92) !important;
+    opacity: 0.92;
+  }
+  .daily-card--front:hover {
+    transform: rotate(1deg) translate(4%, -4%) scale(1.02) !important;
   }
 
   /* ---- Music waveform bars ---- */

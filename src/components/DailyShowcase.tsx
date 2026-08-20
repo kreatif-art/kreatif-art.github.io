@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Pause, Image as ImageIcon, Music } from 'lucide-react';
+import { Play, Pause, Music, Image as ImageIcon } from 'lucide-react';
 import { useContent } from '@/hooks/useContent';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn } from '@/lib/utils';
@@ -14,17 +14,14 @@ function pickDaily(items: ContentItem[], salt: number): ContentItem | null {
 }
 
 function Waveform({ active }: { active: boolean }) {
-  const bars = 24;
+  const bars = 20;
   return (
-    <div className="flex h-10 items-end justify-center gap-[3px]" aria-hidden>
+    <div className="flex h-8 items-end justify-center gap-[2px]" aria-hidden>
       {Array.from({ length: bars }).map((_, i) => (
         <span
           key={i}
-          className={cn('wave-bar w-[3px] rounded-full bg-orange-400/90', active && 'wave-bar--on')}
-          style={{
-            animationDelay: `${i * 0.04}s`,
-            height: active ? undefined : '20%',
-          }}
+          className={cn('wave-bar w-[2.5px] rounded-full bg-white/90', active && 'wave-bar--on')}
+          style={{ animationDelay: `${i * 0.045}s` }}
         />
       ))}
     </div>
@@ -32,8 +29,8 @@ function Waveform({ active }: { active: boolean }) {
 }
 
 /**
- * Flip-book style panel: Music of the day / Art of the day.
- * Play triggers global player + waveform animation.
+ * Stacked, overlapping "of the day" cards — music + art at once.
+ * Front card tilts; back card peeks. Play triggers waveform on the music card.
  */
 export function DailyShowcase() {
   const { items: musicItems, loading: musicLoading } = useContent({ type: 'music', pageSize: 20 });
@@ -42,31 +39,6 @@ export function DailyShowcase() {
 
   const music = useMemo(() => pickDaily(musicItems, 7), [musicItems]);
   const art = useMemo(() => pickDaily(artItems, 13), [artItems]);
-
-  const [face, setFace] = useState<'music' | 'art'>('music');
-  const [flipping, setFlipping] = useState(false);
-  const autoRef = useRef<number | null>(null);
-
-  const flip = (to?: 'music' | 'art') => {
-    if (flipping) return;
-    setFlipping(true);
-    setTimeout(() => {
-      setFace((f) => to ?? (f === 'music' ? 'art' : 'music'));
-      setFlipping(false);
-    }, 320);
-  };
-
-  // Gentle auto-flip every 8s when not playing music of the day
-  useEffect(() => {
-    autoRef.current = window.setInterval(() => {
-      const playingDaily =
-        isPlaying && music && currentTrack?.id === music.id;
-      if (!playingDaily) flip();
-    }, 8000);
-    return () => {
-      if (autoRef.current) clearInterval(autoRef.current);
-    };
-  }, [isPlaying, currentTrack, music]);
 
   const isDailyPlaying = !!(music && currentTrack?.id === music.id && isPlaying);
 
@@ -82,101 +54,132 @@ export function DailyShowcase() {
   const musicCover = music?.cover_image_url || music?.file_url;
   const artCover = art?.file_url;
 
-  return (
-    <div className="relative w-full max-w-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <p className="label-caps text-neutral-500">Of the day</p>
-        <div className="flex gap-1 rounded-full border border-white/10 bg-white/[0.03] p-0.5">
-          <button
-            type="button"
-            onClick={() => flip('music')}
-            className={cn(
-              'rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-wider transition-colors',
-              face === 'music' ? 'bg-white/15 text-white' : 'text-neutral-500 hover:text-neutral-300',
-            )}
-          >
-            Music
-          </button>
-          <button
-            type="button"
-            onClick={() => flip('art')}
-            className={cn(
-              'rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-wider transition-colors',
-              face === 'art' ? 'bg-white/15 text-white' : 'text-neutral-500 hover:text-neutral-300',
-            )}
-          >
-            Art
-          </button>
-        </div>
+  if (loading) {
+    return (
+      <div className="flex h-[420px] items-center justify-center text-sm text-neutral-500">
+        Loading today&apos;s picks…
       </div>
+    );
+  }
 
-      <div className={cn('flip-book', flipping && 'flip-book--flip')}>
-        <div className="flip-book-inner glass-card overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.04] shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-          {loading ? (
-            <div className="flex aspect-[4/5] items-center justify-center text-sm text-neutral-500">
-              Loading…
+  if (!music && !art) {
+    return (
+      <div className="flex h-[320px] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-sm text-neutral-500">
+        No content yet for today&apos;s picks.
+      </div>
+    );
+  }
+
+  return (
+    <div className="daily-stack relative mx-auto w-full max-w-[300px] select-none sm:max-w-[320px]">
+      <p className="label-caps mb-5 text-center text-neutral-500">Today&apos;s picks</p>
+
+      <div className="relative mx-auto aspect-[3/4] w-full">
+        {/* Art card — back, offset */}
+        {art && (
+          <Link
+            to={`/content/${art.id}`}
+            className="daily-card daily-card--back group absolute inset-0 overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/50"
+            style={{
+              transform: 'rotate(-7deg) translate(-10%, 6%) scale(0.94)',
+            }}
+          >
+            <div className="relative h-full w-full bg-neutral-900">
+              {artCover ? (
+                <img
+                  src={artCover}
+                  alt={art.title}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <ImageIcon className="h-10 w-10 text-neutral-600" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/40 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-pink-200/90 backdrop-blur-md">
+                  Art of the day
+                </span>
+                <h3 className="mt-2 truncate text-sm font-medium text-white">{art.title}</h3>
+                <p className="truncate text-xs text-neutral-400">
+                  {art.profiles?.display_name || 'Kreatif'}
+                </p>
+              </div>
             </div>
-          ) : face === 'music' && music ? (
-            <div className="flex flex-col">
-              <div className="relative aspect-square overflow-hidden bg-neutral-900">
+          </Link>
+        )}
+
+        {/* Music card — front */}
+        {music && (
+          <div
+            className="daily-card daily-card--front absolute inset-0 overflow-hidden rounded-2xl border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
+            style={{
+              transform: 'rotate(4deg) translate(8%, -2%)',
+            }}
+          >
+            <div className="relative flex h-full flex-col bg-neutral-950">
+              <div className="relative min-h-0 flex-1 overflow-hidden">
                 {musicCover ? (
                   <img src={musicCover} alt={music.title} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <Music className="h-12 w-12 text-neutral-600" />
+                  <div className="flex h-full items-center justify-center bg-neutral-900">
+                    <Music className="h-10 w-10 text-neutral-600" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                <button
-                  type="button"
-                  onClick={handlePlay}
-                  className="absolute bottom-4 left-4 flex h-12 w-12 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg transition-transform hover:scale-105"
-                  aria-label={isDailyPlaying ? 'Pause' : 'Play'}
-                >
-                  {isDailyPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
-                </button>
-                <div className="absolute bottom-4 right-4 left-20">
-                  <Waveform active={isDailyPlaying} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+                <div
+                  className={cn(
+                    'pointer-events-none absolute inset-0 transition-opacity duration-500',
+                    isDailyPlaying ? 'opacity-100' : 'opacity-0',
+                  )}
+                  style={{
+                    background:
+                      'radial-gradient(ellipse at 50% 80%, rgba(251,146,60,0.25), transparent 60%)',
+                  }}
+                />
+
+                <div className="absolute inset-x-0 bottom-0 p-4 pt-12">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/45 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-orange-200/90 backdrop-blur-md">
+                    Music of the day
+                  </span>
+                  <Link to={`/content/${music.id}`} className="mt-2 block">
+                    <h3 className="truncate text-base font-medium text-white hover:underline">
+                      {music.title}
+                    </h3>
+                    <p className="truncate text-xs text-neutral-400">
+                      {music.profiles?.display_name || 'Kreatif'}
+                    </p>
+                  </Link>
+
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={handlePlay}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 shadow-lg transition-transform hover:scale-105 active:scale-95"
+                      aria-label={isDailyPlaying ? 'Pause' : 'Play'}
+                    >
+                      {isDailyPlaying ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4 translate-x-0.5" />
+                      )}
+                    </button>
+                    <div className="min-w-0 flex-1">
+                      <Waveform active={isDailyPlaying} />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <Link to={`/content/${music.id}`} className="block p-4 transition-colors hover:bg-white/[0.03]">
-                <p className="label-caps mb-1 text-orange-400/80">Music of the day</p>
-                <h3 className="truncate text-base font-medium text-white">{music.title}</h3>
-                <p className="mt-0.5 truncate text-sm text-neutral-400">
-                  {music.profiles?.display_name || 'Kreatif'}
-                </p>
-              </Link>
             </div>
-          ) : face === 'art' && art ? (
-            <div className="flex flex-col">
-              <Link to={`/content/${art.id}`} className="relative aspect-[4/5] overflow-hidden bg-neutral-900">
-                {artCover ? (
-                  <img
-                    src={artCover}
-                    alt={art.title}
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.03]"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <ImageIcon className="h-12 w-12 text-neutral-600" />
-                  </div>
-                )}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-4 pt-16">
-                  <p className="label-caps mb-1 text-pink-300/80">Art of the day</p>
-                  <h3 className="truncate text-base font-medium text-white">{art.title}</h3>
-                  <p className="mt-0.5 truncate text-sm text-neutral-300">
-                    {art.profiles?.display_name || 'Kreatif'}
-                  </p>
-                </div>
-              </Link>
-            </div>
-          ) : (
-            <div className="flex aspect-[4/5] items-center justify-center p-6 text-center text-sm text-neutral-500">
-              No content yet for today’s picks.
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      <p className="mt-6 text-center text-[11px] text-neutral-600">
+        Hover the back card to lift it · Play for soundwaves
+      </p>
     </div>
   );
 }
