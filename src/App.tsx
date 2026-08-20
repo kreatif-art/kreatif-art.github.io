@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { MiniPlayer } from '@/components/MiniPlayer';
 import { SynestheticBackground } from '@/components/SynestheticBackground';
 import { PageTransition } from '@/components/PageTransition';
+import { IntroLoader } from '@/components/IntroLoader';
 import { ProtectedRoute, AdminRoute, PublicOnlyRoute } from '@/components/ProtectedRoute';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from '@/pages/LoginPage';
@@ -43,6 +44,7 @@ function App() {
   return (
     <AuthProvider>
       <PlayerProvider>
+        <IntroLoader />
         <BrowserRouter>
           <Routes>
             {/* Public-only routes (auth pages) */}

@@ -4,6 +4,7 @@ import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users } from 'lucide-r
 import { useContent } from '@/hooks/useContent';
 import { useFadeUpRoot } from '@/hooks/useFadeUp';
 import { ContentCard } from '@/components/ContentCard';
+import { DailyShowcase } from '@/components/DailyShowcase';
 import { LoadingState, EmptyState } from '@/components/States';
 import { useAuth } from '@/context/AuthContext';
 
@@ -27,51 +28,57 @@ export function HomePage() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:py-36">
-          <div className="max-w-3xl" data-fade-up>
-            <p className="label-caps mb-6 text-orange-400/90">Sound &amp; sight</p>
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:py-32">
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_minmax(260px,360px)] lg:gap-16">
+            <div className="max-w-2xl" data-fade-up>
+              <p className="label-caps mb-6 text-orange-400/90">Sound &amp; sight</p>
 
-            <h1 className="hero-title text-5xl text-white sm:text-6xl lg:text-[4.5rem]">
-              A space for original music
-              <br className="hidden sm:block" />
-              <span className="text-white/55"> and visual art.</span>
-            </h1>
+              <h1 className="hero-title text-5xl text-white sm:text-6xl lg:text-[4.25rem]">
+                A space for original music
+                <br className="hidden sm:block" />
+                <span className="text-white/55"> and visual art.</span>
+              </h1>
 
-            <p className="mt-7 max-w-md text-[15px] leading-relaxed text-neutral-400 sm:text-base">
-              For day-dreamers, makers, and collectors — work that pairs sound with image, and meaning with craft.
-            </p>
+              <p className="mt-7 max-w-md text-[15px] leading-relaxed text-neutral-400 sm:text-base">
+                For day-dreamers, makers, and collectors — work that pairs sound with image, and meaning with craft.
+              </p>
 
-            <div className="mt-10 flex flex-wrap gap-3">
-              {user ? (
+              <div className="mt-10 flex flex-wrap gap-3">
+                {user ? (
+                  <Link
+                    to="/upload"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
+                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Upload work
+                  </Link>
+                ) : (
+                  <Link
+                    to="/signup"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
+                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                  >
+                    Join Kreatif
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
                 <Link
-                  to="/upload"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
-                  style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                  to="/browse/music"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-2.5 text-sm font-medium text-neutral-300 transition-colors hover:border-white/30 hover:text-white"
                 >
-                  <Upload className="h-4 w-4" />
-                  Upload work
+                  Explore
                 </Link>
-              ) : (
-                <Link
-                  to="/signup"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
-                  style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
-                >
-                  Join Kreatif
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+              </div>
+
+              {user && profile?.is_artist && (
+                <p className="mt-4 text-sm text-neutral-500">Artist mode is active — you can publish content.</p>
               )}
-              <Link
-                to="/browse/music"
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-2.5 text-sm font-medium text-neutral-300 transition-colors hover:border-white/30 hover:text-white"
-              >
-                Explore
-              </Link>
             </div>
 
-            {user && profile?.is_artist && (
-              <p className="mt-4 text-sm text-neutral-500">Artist mode is active — you can publish content.</p>
-            )}
+            <div className="mx-auto w-full lg:mx-0" data-fade-up data-delay="2">
+              <DailyShowcase />
+            </div>
           </div>
         </div>
       </section>

@@ -78,6 +78,44 @@
   [data-fade-up][data-delay='2'] { transition-delay: 0.16s; }
   [data-fade-up][data-delay='3'] { transition-delay: 0.24s; }
 
+  /* ---- Sonar-style intro loader ---- */
+  .intro-loader {
+    transition: opacity 0.65s var(--ease-out-expo), transform 0.65s var(--ease-out-expo);
+  }
+  .intro-loader--out {
+    opacity: 0;
+    transform: scale(1.03);
+    pointer-events: none;
+  }
+
+  /* ---- Flip book for daily showcase ---- */
+  .flip-book {
+    perspective: 1200px;
+  }
+  .flip-book-inner {
+    transition: transform 0.32s var(--ease-out-expo), opacity 0.32s ease;
+    transform-origin: center center;
+  }
+  .flip-book--flip .flip-book-inner {
+    transform: rotateY(90deg) scale(0.96);
+    opacity: 0.35;
+  }
+
+  /* ---- Music waveform bars ---- */
+  @keyframes wave-bar {
+    0%, 100% { height: 18%; }
+    50% { height: 100%; }
+  }
+  .wave-bar {
+    height: 22%;
+    min-height: 4px;
+    max-height: 100%;
+    transition: height 0.2s ease;
+  }
+  .wave-bar--on {
+    animation: wave-bar 0.7s ease-in-out infinite;
+  }
+
   /* ---- Glassmorphic card shell (Step B) ---- */
   .glass-card {
     -webkit-backdrop-filter: blur(16px);
