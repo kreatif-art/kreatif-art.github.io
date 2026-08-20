@@ -13,6 +13,36 @@
 }
 
 @layer utilities {
+  /* ---- Glassmorphic card shell (Step B) ---- */
+  .glass-card {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  /* Equal-weight content grid — denser than classic 6-col, still uniform */
+  .content-masonry {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
+  }
+  @media (min-width: 640px) {
+    .content-masonry {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .content-masonry {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.125rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .content-masonry {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
   /* ---- Scroll reveal ---- */
   .reveal {
     opacity: 0;

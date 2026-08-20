@@ -201,7 +201,7 @@ export function ArtistProfilePage() {
           ) : items.length === 0 ? (
             <EmptyState title={`No ${tab} yet`} message={isOwnProfile ? 'Upload your first piece to get started.' : 'This artist hasn\'t uploaded any ' + tab + ' yet.'} />
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="content-masonry">
               {items.map((item) => (
                 <ContentCard key={item.id} item={item} />
               ))}

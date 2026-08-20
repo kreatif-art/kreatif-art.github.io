@@ -50,7 +50,7 @@ export function SearchPage() {
             <p className="mb-4 text-sm text-neutral-400">
               {items.length}+ result{items.length !== 1 ? 's' : ''} for &ldquo;{query}&rdquo;
             </p>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            <div className="content-masonry">
               {items.map((item) => (
                 <ContentCard key={item.id} item={item} />
               ))}

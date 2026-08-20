@@ -124,14 +124,9 @@ export function HomePage() {
             }
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="content-masonry">
             {musicItems.map((item) => (
-              <div
-                key={item.id}
-                className="h-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/80 transition-colors hover:border-neutral-700"
-              >
-                <ContentCard item={item} />
-              </div>
+              <ContentCard key={item.id} item={item} />
             ))}
           </div>
         )}
@@ -166,14 +161,9 @@ export function HomePage() {
             }
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="content-masonry">
             {artItems.map((item) => (
-              <div
-                key={item.id}
-                className="h-full overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/80 transition-colors hover:border-neutral-700"
-              >
-                <ContentCard item={item} />
-              </div>
+              <ContentCard key={item.id} item={item} />
             ))}
           </div>
         )}
