@@ -32,10 +32,10 @@ export function HomePage() {
               Original work only
             </p>
 
-            <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="hero-title text-5xl text-white sm:text-6xl lg:text-7xl">
               A space for original music
               <br className="hidden sm:block" />
-              <span className="text-neutral-400"> and visual art.</span>
+              <span className="text-neutral-300"> and visual art.</span>
             </h1>
 
             <p className="mt-6 max-w-lg text-base leading-relaxed text-neutral-400 sm:text-lg">

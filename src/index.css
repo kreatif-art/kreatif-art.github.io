@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Befolk — free brush script (Dirtyline Studio). Files live in /public/fonts/ */
+@font-face {
+  font-family: 'Befolk';
+  src:
+    url('/fonts/Befolk.woff2') format('woff2'),
+    url('/fonts/Befolk.woff') format('woff'),
+    url('/fonts/Befolk.ttf') format('truetype'),
+    url('/fonts/Befolk.otf') format('opentype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -13,6 +26,14 @@
 }
 
 @layer utilities {
+  /* ---- Hero title: Befolk brush script ---- */
+  .hero-title {
+    font-family: 'Befolk', 'Segoe Script', 'Apple Chancery', cursive;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+  }
+
   /* ---- Glassmorphic card shell (Step B) ---- */
   .glass-card {
     -webkit-backdrop-filter: blur(16px);
