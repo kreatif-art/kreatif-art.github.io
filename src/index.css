@@ -19,6 +19,37 @@
     backdrop-filter: blur(16px);
   }
 
+  /* ---- Step D: vinyl disc spin on music card hover ---- */
+  @keyframes vinyl-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .vinyl-stage .vinyl-disc {
+    transform: translateX(0) scale(0.92);
+    opacity: 0.85;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+  }
+  .group:hover .vinyl-stage .vinyl-disc {
+    transform: translateX(22%) scale(1);
+    opacity: 1;
+  }
+  .vinyl-stage .vinyl-disc-inner {
+    animation: vinyl-spin 8s linear infinite;
+    animation-play-state: paused;
+  }
+  .group:hover .vinyl-stage .vinyl-disc-inner {
+    animation-play-state: running;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vinyl-stage .vinyl-disc-inner {
+      animation: none;
+    }
+    .group:hover .vinyl-stage .vinyl-disc {
+      transform: translateX(12%) scale(1);
+    }
+  }
+
   /* Equal-weight content grid — denser than classic 6-col, still uniform */
   .content-masonry {
     display: grid;
