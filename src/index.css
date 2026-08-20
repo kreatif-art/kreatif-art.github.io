@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* ---- Scroll reveal ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---- Floating gradient orbs ---- */
+  @keyframes orb-drift-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.1); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+  }
+  @keyframes orb-drift-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-25px, 20px) scale(1.05); }
+    66% { transform: translate(20px, -25px) scale(0.9); }
+  }
+  .orb-1 { animation: orb-drift-1 12s ease-in-out infinite; }
+  .orb-2 { animation: orb-drift-2 14s ease-in-out infinite; }
+
+  /* ---- Liquid mesh gradient background ---- */
+  @keyframes mesh-shift {
+    0%, 100% { transform: translate(0%, 0%) rotate(0deg); }
+    25% { transform: translate(3%, -2%) rotate(2deg); }
+    50% { transform: translate(-2%, 3%) rotate(-1deg); }
+    75% { transform: translate(2%, 2%) rotate(1deg); }
+  }
+  .mesh-anim {
+    animation: mesh-shift 20s ease-in-out infinite;
+  }
+
+  /* ---- Character-by-character headline reveal ---- */
+  @keyframes char-reveal {
+    0% {
+      opacity: 0;
+      transform: translateY(80%) rotateX(-90deg) scale(0.8);
+      filter: blur(8px);
+    }
+    60% {
+      filter: blur(0px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) rotateX(0) scale(1);
+      filter: blur(0px);
+    }
+  }
+  .char-reveal {
+    display: inline-block;
+    opacity: 0;
+    transform-origin: bottom;
+    animation: char-reveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* ---- Glow sweep across headline ---- */
+  @keyframes glow-sweep {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .glow-text {
+    background: linear-gradient(
+      90deg,
+      #fb923c 0%,
+      #f472b6 25%,
+      #fbbf24 50%,
+      #f472b6 75%,
+      #fb923c 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glow-sweep 5s linear infinite;
+  }
+
+  /* ---- Gradient shimmer (for subtitle accent) ---- */
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .gradient-animate {
+    background-size: 200% auto;
+    animation: gradient-shift 4s ease-in-out infinite;
+  }
+
+  /* ---- Card hover lift ---- */
+  .card-lift {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.4s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px);
+  }
+
+  /* ---- Fade-up entrance ---- */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up {
+    opacity: 0;
+    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  /* ---- Marquee ---- */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    animation: marquee 30s linear infinite;
+  }
+
+  /* ---- Scale-in ---- */
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .scale-in {
+    opacity: 0;
+    animation: scale-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  /* ---- Floating particle symbols ---- */
+  @keyframes float-particle {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(15px, -25px) rotate(10deg); }
+    50% { transform: translate(-10px, -15px) rotate(-5deg); }
+    75% { transform: translate(20px, 10px) rotate(8deg); }
+  }
+  .float-particle {
+    animation: float-particle var(--float-duration, 8s) ease-in-out infinite;
+  }
+
+  /* ---- Underline draw on link hover ---- */
+  @keyframes draw-underline {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* ---- Pulse ring for badge ---- */
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(251, 146, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0); }
+  }
+  .pulse-ring {
+    animation: pulse-ring 2.5s ease-out infinite;
+  }
+
+  /* ---- Shimmer bar (loading-like accent) ---- */
+  @keyframes shimmer-bar {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .shimmer-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer-bar 3s ease-in-out infinite;
+  }
+
+  /* ---- Spin slow (for decorative ring) ---- */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .spin-slow {
+    animation: spin-slow 30s linear infinite;
+  }
+  .spin-slow-reverse {
+    animation: spin-slow 40s linear infinite reverse;
+  }
+
+  /* ---- Blob morph ---- */
+  @keyframes blob-morph {
+    0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; }
+    33% { border-radius: 60% 40% 30% 70% / 60% 35% 65% 40%; }
+    66% { border-radius: 35% 65% 55% 45% / 40% 60% 40% 60%; }
+  }
+  .blob-morph {
+    animation: blob-morph 10s ease-in-out infinite;
+  }
+
+  /* ---- Text mask reveal (for section headers) ---- */
+  @keyframes mask-reveal {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  .mask-reveal {
+    animation: mask-reveal 0.8s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+  }
+}
