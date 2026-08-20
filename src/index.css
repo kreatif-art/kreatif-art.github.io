@@ -2,17 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Befolk — free brush script (Dirtyline Studio). Files live in /public/fonts/ */
-@font-face {
-  font-family: 'Befolk';
-  src:
-    url('/fonts/Befolk.woff2') format('woff2'),
-    url('/fonts/Befolk.woff') format('woff'),
-    url('/fonts/Befolk.ttf') format('truetype'),
-    url('/fonts/Befolk.otf') format('opentype');
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --page-transition: 0.4s;
 }
 
 @layer base {
@@ -22,17 +15,68 @@
   body {
     background-color: #0a0a0b;
     color: #e5e5e5;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-optical-sizing: auto;
   }
 }
 
 @layer utilities {
-  /* ---- Hero title: Befolk brush script ---- */
+  /* ---- Coveo-inspired display type (Eiko → Instrument Serif) ---- */
   .hero-title {
-    font-family: 'Befolk', 'Segoe Script', 'Apple Chancery', cursive;
+    font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
     font-weight: 400;
-    letter-spacing: 0.01em;
-    line-height: 1.15;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
   }
+
+  .label-caps {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* ---- Film grain overlay (Coveo #grain) ---- */
+  .film-grain {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- Page transition (Swup-style fade) ---- */
+  .page-transition {
+    transition: opacity var(--page-transition) ease, transform var(--page-transition) var(--ease-out-expo);
+  }
+  .page-transition--in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .page-transition--out {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  /* ---- Scroll fade-up (Coveo animate__fadeUp) ---- */
+  [data-fade-up] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s var(--ease-out-expo);
+  }
+  [data-fade-up].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  [data-fade-up][data-delay='1'] { transition-delay: 0.08s; }
+  [data-fade-up][data-delay='2'] { transition-delay: 0.16s; }
+  [data-fade-up][data-delay='3'] { transition-delay: 0.24s; }
 
   /* ---- Glassmorphic card shell (Step B) ---- */
   .glass-card {
