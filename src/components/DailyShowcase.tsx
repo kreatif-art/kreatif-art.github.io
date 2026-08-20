@@ -60,14 +60,14 @@ export function DailyShowcase() {
   }
 
   return (
-    <div className="relative w-full max-w-md mx-auto lg:max-w-none">
+    <div className="relative w-full max-w-[33.6rem] mx-auto lg:max-w-none scale-100 lg:origin-top">
       <p className="label-caps mb-4 text-neutral-500">Today&apos;s picks</p>
 
       {/* Featured art */}
       {art ? (
         <Link
           to={`/content/${art.id}`}
-          className="group relative block overflow-hidden rounded-2xl border border-white/[0.1] bg-neutral-900 shadow-[0_24px_50px_rgba(0,0,0,0.45)]"
+          className="group relative block overflow-hidden rounded-2xl border border-white/[0.1] bg-neutral-900 shadow-[0_24px_50px_rgba(0,0,0,0.45)] origin-top scale-[1.2] sm:scale-[1.2]"
         >
           <div className="relative aspect-[4/5] w-full sm:aspect-[5/6]">
             {artCover ? (
@@ -101,7 +101,7 @@ export function DailyShowcase() {
 
       {/* Spinning CD — music of the day, overlaps bottom-right of art */}
       {music && (
-        <div className="absolute -bottom-6 -right-2 z-10 sm:-bottom-8 sm:-right-4">
+        <div className="absolute -bottom-2 right-0 z-10 sm:bottom-0 sm:-right-2">
           <div className="relative flex flex-col items-center">
             <button
               type="button"
@@ -164,7 +164,7 @@ export function DailyShowcase() {
       )}
 
       {/* spacer so CD doesn't collide with content below on mobile */}
-      <div className="h-16 sm:h-12" />
+      <div className="h-24 sm:h-28" />
     </div>
   );
 }

@@ -34,9 +34,12 @@ export function HomePage() {
               <p className="label-caps mb-6 text-orange-400/90">Sound &amp; sight</p>
 
               <h1 className="hero-title text-5xl text-white sm:text-6xl lg:text-[4.25rem]">
-                A space for original music
+                A space for original{' '}
+                <span className="font-musicnet not-italic text-orange-300">music</span>
                 <br className="hidden sm:block" />
-                <span className="text-white/55"> and visual art.</span>
+                <span className="text-white/55"> and </span>
+                <span className="font-arthure not-italic text-pink-300/90">visual art</span>
+                <span className="text-white/55">.</span>
               </h1>
 
               <p className="mt-7 max-w-md text-[15px] leading-relaxed text-neutral-400 sm:text-base">
