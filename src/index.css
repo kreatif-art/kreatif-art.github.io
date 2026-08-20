@@ -160,6 +160,50 @@
     animation: wave-bar 0.7s ease-in-out infinite;
   }
 
+  /* ---- Horizontal award-style rails ---- */
+  .h-rail {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+  .h-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .h-rail.is-dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  .h-rail > .rail-card {
+    scroll-snap-align: start;
+    flex: 0 0 min(72vw, 220px);
+  }
+  @media (min-width: 640px) {
+    .h-rail > .rail-card {
+      flex-basis: 200px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .h-rail > .rail-card {
+      flex-basis: 220px;
+    }
+  }
+  .rail-shell {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  @media (min-width: 640px) {
+    .rail-shell {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+
+
   /* ---- Spinning CD (music of the day) ---- */
   @keyframes cd-spin {
     from { transform: rotate(0deg); }

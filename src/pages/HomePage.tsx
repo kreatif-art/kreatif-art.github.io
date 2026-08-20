@@ -5,6 +5,7 @@ import { useContent } from '@/hooks/useContent';
 import { useFadeUpRoot } from '@/hooks/useFadeUp';
 import { ContentCard } from '@/components/ContentCard';
 import { DailyShowcase } from '@/components/DailyShowcase';
+import { HorizontalRail } from '@/components/HorizontalRail';
 import { LoadingState, EmptyState } from '@/components/States';
 import { useAuth } from '@/context/AuthContext';
 
@@ -102,81 +103,89 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ===== Latest Music ===== */}
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" data-fade-up data-delay="1">
-        <div className="mb-5 flex items-end justify-between">
+      {/* ===== Sound rail (→) ===== */}
+      <section className="border-t border-white/[0.04] py-8" data-fade-up data-delay="1">
+        <div className="mx-auto mb-4 flex max-w-7xl items-end justify-between px-4 sm:px-6">
           <div>
-            <p className="label-caps mb-2 text-neutral-500">Discography</p>
-            <h2 className="font-serif text-2xl italic tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-              Latest music
+            <p className="label-caps mb-1 text-orange-400/70">Scroll into sound</p>
+            <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
+              Latest <span className="font-musicnet not-italic text-orange-300">music</span>
             </h2>
           </div>
           <Link
             to="/browse/music"
             className="group flex items-center gap-1 text-sm text-neutral-400 transition-colors hover:text-white"
           >
-            View all
+            Explore
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
         {musicLoading ? (
-          <LoadingState />
+          <div className="px-4"><LoadingState /></div>
         ) : musicItems.length === 0 ? (
-          <EmptyState
-            title="No music yet"
-            message="Be the first to share a track."
-            action={
-              <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
-                Upload
-              </Link>
-            }
-          />
-        ) : (
-          <div className="content-masonry">
-            {musicItems.map((item) => (
-              <ContentCard key={item.id} item={item} />
-            ))}
+          <div className="px-4">
+            <EmptyState
+              title="No music yet"
+              message="Be the first to share a track."
+              action={
+                <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
+                  Upload
+                </Link>
+              }
+            />
           </div>
+        ) : (
+          <HorizontalRail tone="music">
+            {musicItems.map((item) => (
+              <div key={item.id} className="rail-card">
+                <ContentCard item={item} />
+              </div>
+            ))}
+          </HorizontalRail>
         )}
       </section>
 
-      {/* ===== Latest Art ===== */}
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" data-fade-up data-delay="2">
-        <div className="mb-5 flex items-end justify-between">
+      {/* ===== Sight rail (←) ===== */}
+      <section className="border-t border-white/[0.04] py-8" data-fade-up data-delay="2">
+        <div className="mx-auto mb-4 flex max-w-7xl items-end justify-between px-4 sm:px-6">
           <div>
-            <p className="label-caps mb-2 text-neutral-500">Gallery</p>
-            <h2 className="text-2xl italic tracking-tight text-white sm:text-3xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-              Latest art
+            <p className="label-caps mb-1 text-pink-400/70">Scroll into sight</p>
+            <h2 className="text-3xl tracking-tight text-white sm:text-4xl">
+              Latest <span className="font-arthure not-italic text-pink-300/90">art</span>
             </h2>
           </div>
           <Link
             to="/browse/art"
             className="group flex items-center gap-1 text-sm text-neutral-400 transition-colors hover:text-white"
           >
-            View all
+            Explore
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
         {artLoading ? (
-          <LoadingState />
+          <div className="px-4"><LoadingState /></div>
         ) : artItems.length === 0 ? (
-          <EmptyState
-            title="No art yet"
-            message="Be the first to share artwork."
-            action={
-              <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
-                Upload
-              </Link>
-            }
-          />
-        ) : (
-          <div className="content-masonry">
-            {artItems.map((item) => (
-              <ContentCard key={item.id} item={item} />
-            ))}
+          <div className="px-4">
+            <EmptyState
+              title="No art yet"
+              message="Be the first to share artwork."
+              action={
+                <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900">
+                  Upload
+                </Link>
+              }
+            />
           </div>
+        ) : (
+          <HorizontalRail tone="art">
+            {artItems.map((item) => (
+              <div key={item.id} className="rail-card">
+                <ContentCard item={item} />
+              </div>
+            ))}
+          </HorizontalRail>
         )}
       </section>
 
