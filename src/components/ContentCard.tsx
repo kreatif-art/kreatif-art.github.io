@@ -150,13 +150,25 @@ export function ContentCard({ item }: { item: ContentItem }) {
           </button>
         )}
 
-        <div
-          className={cn(
-            'absolute left-3 top-3 z-30 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
-            'border border-white/10 bg-black/45 text-white/90 backdrop-blur-md',
+        <div className="absolute left-3 top-3 z-30 flex flex-wrap gap-1">
+          <div
+            className={cn(
+              'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
+              'border border-white/10 bg-black/45 text-white/90 backdrop-blur-md',
+            )}
+          >
+            {isMusic ? 'Music' : 'Art'}
+          </div>
+          {item.is_featured && (
+            <div className="rounded-full border border-amber-400/40 bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-100 backdrop-blur-md">
+              Featured
+            </div>
           )}
-        >
-          {isMusic ? 'Music' : 'Art'}
+          {item.profiles?.is_pro && (
+            <div className="rounded-full border border-orange-400/40 bg-orange-500/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-orange-100 backdrop-blur-md">
+              Pro
+            </div>
+          )}
         </div>
       </div>
 

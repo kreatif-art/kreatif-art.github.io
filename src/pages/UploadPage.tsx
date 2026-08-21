@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useGenres } from '@/hooks/useContent';
@@ -243,10 +243,24 @@ export function UploadPage() {
   return (
     <div className="min-h-screen bg-neutral-950 pb-24">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <h1 className="mb-6 flex items-center gap-2 text-2xl font-bold text-white">
+        <h1 className="mb-2 flex items-center gap-2 text-2xl font-bold text-white">
           <UploadIcon className="h-6 w-6 text-orange-400" />
           Upload your work
         </h1>
+        {(() => {
+          const pro = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
+          return (
+            <p className="mb-6 text-xs text-neutral-500">
+              {pro
+                ? 'Artist Pro — higher upload allowance (no free-tier monthly cap).'
+                : `Free plan — up to ${FREE_UPLOADS_PER_MONTH} uploads per month. `}
+              }
+              {!pro && (
+                <Link to="/pro" className="text-orange-300/90 hover:underline">Upgrade to Pro</Link>
+              )}
+            </p>
+          );
+        })()}
 
         {/* Type toggle */}
         <div className="mb-6 flex gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-1">

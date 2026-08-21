@@ -6,7 +6,8 @@ import { useContent } from '@/hooks/useContent';
 import { ContentCard } from '@/components/ContentCard';
 import { LoadingState, EmptyState } from '@/components/States';
 import { getInitials, cn } from '@/lib/utils';
-import { Music, Image, Upload, LogOut, Camera, Loader2, Check } from 'lucide-react';
+import { Music, Image, Upload, LogOut, Camera, Loader2, Check, Star, BarChart3, BadgeCheck } from 'lucide-react';
+import { FREE_UPLOADS_PER_MONTH } from '@/types';
 
 export function ProfilePage() {
   const { user, profile, updateProfile, signOut, refreshProfile } = useAuth();
@@ -19,8 +20,62 @@ export function ProfilePage() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [tab, setTab] = useState<'music' | 'art'>('music');
 
-  const { items: musicItems, loading: musicLoading } = useContent({ type: 'music', userId: user?.id });
-  const { items: artItems, loading: artLoading } = useContent({ type: 'art', userId: user?.id });
+  const { items: musicItems, loading: musicLoading, refetch: refetchMusic } = useContent({ type: 'music', userId: user?.id });
+  const { items: artItems, loading: artLoading, refetch: refetchArt } = useContent({ type: 'art', userId: user?.id });
+
+  const [stats, setStats] = useState({ likes: 0, subscribers: 0, uploadsThisMonth: 0, featured: 0, tipsReceived: 0 });
+  const [featBusy, setFeatBusy] = useState<string | null>(null);
+  const [featMsg, setFeatMsg] = useState<string | null>(null);
+
+  const isProActive = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+      const contentIds = [...musicItems, ...artItems].map((i) => i.id);
+      let likes = 0;
+      if (contentIds.length) {
+        const { count } = await supabase.from('likes').select('id', { count: 'exact', head: true }).in('content_id', contentIds);
+        likes = count || 0;
+      }
+      const { count: subs } = await supabase.from('subscriptions').select('id', { count: 'exact', head: true }).eq('subscribed_to', user.id);
+      const { count: monthUp } = await supabase.from('content').select('id', { count: 'exact', head: true }).eq('user_id', user.id).gte('created_at', monthStart.toISOString());
+      const featured = [...musicItems, ...artItems].filter((i) => i.is_featured).length;
+      const { data: tipRows } = await supabase.from('tips').select('artist_amount_cents').eq('to_user_id', user.id).eq('status', 'completed');
+      const tipsReceived = (tipRows || []).reduce((s, r) => s + (r.artist_amount_cents || 0), 0);
+      setStats({
+        likes,
+        subscribers: subs || 0,
+        uploadsThisMonth: monthUp || 0,
+        featured,
+        tipsReceived,
+      });
+    })();
+  }, [user, musicItems, artItems]);
+
+  const toggleFeature = async (contentId: string, currently: boolean) => {
+    if (!isProActive) {
+      setFeatMsg('Artist Pro is required to feature works.');
+      return;
+    }
+    setFeatBusy(contentId);
+    setFeatMsg(null);
+    const { error } = await supabase.rpc('set_content_featured', {
+      p_content_id: contentId,
+      p_featured: !currently,
+    });
+    setFeatBusy(null);
+    if (error) {
+      setFeatMsg(error.message);
+      return;
+    }
+    await refetchMusic();
+    await refetchArt();
+    setFeatMsg(!currently ? 'Work featured for 30 days.' : 'Feature removed.');
+  };
 
   useEffect(() => {
     if (profile) {
@@ -121,11 +176,18 @@ export function ProfilePage() {
           <div className="flex-1 text-center sm:text-left">
             <h1 className="text-xl font-bold text-white">{profile.display_name}</h1>
             <p className="text-sm text-neutral-500">{profile.email}</p>
-            {profile.is_artist && (
-              <span className="mt-1 inline-block rounded-full bg-orange-500/20 px-2.5 py-0.5 text-xs font-medium text-orange-400">
-                Artist Mode
-              </span>
-            )}
+            <div className="mt-1 flex flex-wrap justify-center gap-1.5 sm:justify-start">
+              {profile.is_artist && (
+                <span className="inline-block rounded-full bg-orange-500/20 px-2.5 py-0.5 text-xs font-medium text-orange-400">
+                  Artist Mode
+                </span>
+              )}
+              {isProActive && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-orange-400/30 bg-orange-500/10 px-2.5 py-0.5 text-xs font-medium text-orange-200">
+                  <BadgeCheck className="h-3 w-3" /> Pro
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <button
@@ -196,25 +258,60 @@ export function ProfilePage() {
         {/* Upload CTA */}
         
         {profile.is_artist && (
-          <div className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-white">
-                  {profile.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date())
-                    ? 'Artist Pro active'
-                    : 'Artist Pro'}
-                </p>
-                <p className="mt-1 text-xs text-neutral-500">
-                  {`Tip balance: $${((profile.tip_balance_cents || 0) / 100).toFixed(2)} · Platform fee on tips is 10%`}
+          <div className="mb-8 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-white">
+                    {isProActive ? 'Artist Pro active' : 'Artist Pro'}
+                    {isProActive && profile.pro_until ? (
+                      <span className="ml-2 text-xs font-normal text-neutral-500">
+                        until {new Date(profile.pro_until).toLocaleDateString()}
+                      </span>
+                    ) : null}
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    {`Tip balance: $${((profile.tip_balance_cents || 0) / 100).toFixed(2)} · Platform fee on tips is 10%`}
+                  </p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Uploads this month: {stats.uploadsThisMonth}
+                    {isProActive ? ' · Pro (no free-tier cap)' : ` / ${FREE_UPLOADS_PER_MONTH} free limit`}
+                  </p>
+                </div>
+                <Link
+                  to="/pro"
+                  className="rounded-full border border-orange-400/30 bg-orange-500/10 px-4 py-2 text-sm text-orange-100 hover:bg-orange-500/20"
+                >
+                  {isProActive ? 'Manage Pro' : 'Go Pro · $9.90/mo'}
+                </Link>
+              </div>
+            </div>
+
+            {isProActive && (
+              <div className="rounded-2xl border border-orange-400/20 bg-orange-500/[0.06] p-5">
+                <div className="mb-3 flex items-center gap-2 text-sm font-medium text-orange-100">
+                  <BarChart3 className="h-4 w-4" /> Pro analytics
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                  {[
+                    ['Likes on your works', stats.likes],
+                    ['Subscribers', stats.subscribers],
+                    ['Uploads (month)', stats.uploadsThisMonth],
+                    ['Featured active', stats.featured],
+                    ['Tips earned', f"${(stats.tipsReceived / 100).toFixed(2)}"],
+                  ].map(([label, val]) => (
+                    <div key={String(label)} className="rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2">
+                      <p className="text-lg font-semibold text-white">{val}</p>
+                      <p className="text-[10px] uppercase tracking-wider text-neutral-500">{label}</p>
+                    </div>
+                  ))}
+                </div>
+                {featMsg && <p className="mt-3 text-xs text-neutral-400">{featMsg}</p>}
+                <p className="mt-3 text-[11px] text-neutral-500">
+                  Feature up to 3 works at a time (30 days each). Use the star on each of your cards below.
                 </p>
               </div>
-              <Link
-                to="/pro"
-                className="rounded-full border border-orange-400/30 bg-orange-500/10 px-4 py-2 text-sm text-orange-100 hover:bg-orange-500/20"
-              >
-                {profile.is_pro ? 'Manage Pro' : 'Go Pro · $9.90/mo'}
-              </Link>
-            </div>
+            )}
           </div>
         )}
 
@@ -270,7 +367,26 @@ export function ProfilePage() {
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {items.map((item) => (
-                <ContentCard key={item.id} item={item} />
+                <div key={item.id} className="relative">
+                  <ContentCard item={item} />
+                  {isProActive && (
+                    <button
+                      type="button"
+                      disabled={featBusy === item.id}
+                      onClick={() => toggleFeature(item.id, !!item.is_featured)}
+                      className={cn(
+                        'absolute right-2 top-2 z-40 flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider backdrop-blur-md transition-colors',
+                        item.is_featured
+                          ? 'border-amber-400/50 bg-amber-500/30 text-amber-50'
+                          : 'border-white/20 bg-black/50 text-white/90 hover:border-amber-400/40 hover:bg-amber-500/20',
+                      )}
+                      title={item.is_featured ? 'Remove feature' : 'Feature this work'}
+                    >
+                      <Star className={cn('h-3 w-3', item.is_featured && 'fill-current')} />
+                      {featBusy === item.id ? '…' : item.is_featured ? 'Featured' : 'Feature'}
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           )}

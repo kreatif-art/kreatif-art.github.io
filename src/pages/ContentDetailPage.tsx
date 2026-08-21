@@ -51,7 +51,7 @@ export function ContentDetailPage() {
     const { data, error: queryError } = await supabase
       .from('content')
       .select(
-        'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre:genres(id, name, type, sort_order)',
+        'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, is_featured, featured_until, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, is_pro, pro_until, email), genre:genres(id, name, type, sort_order)',
       )
       .eq('id', id)
       .maybeSingle();
@@ -278,6 +278,14 @@ export function ContentDetailPage() {
             </div>
 
             <h1 className="text-2xl font-bold text-white sm:text-3xl">{item.title}</h1>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {item.is_featured && (
+                <span className="rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-100">Featured</span>
+              )}
+              {artist?.is_pro && (
+                <span className="rounded-full border border-orange-400/40 bg-orange-500/15 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-orange-100">Pro artist</span>
+              )}
+            </div>
 
             <Link to={`/artist/${artist.id}`} className="mt-3 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-neutral-800">

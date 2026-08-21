@@ -54,6 +54,8 @@ export interface ContentItem {
   genre?: Genre | null;
   like_count?: number;
   is_liked?: boolean;
+  is_featured?: boolean;
+  featured_until?: string | null;
 }
 
 export interface Like {

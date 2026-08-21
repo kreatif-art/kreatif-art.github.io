@@ -52,10 +52,11 @@ export function useContent({
       let query = supabase
         .from('content')
         .select(
-          'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, email), genre:genres(id, name, type, sort_order)',
+          'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, is_featured, featured_until, created_at, updated_at, profiles!inner(id, display_name, avatar_url, bio, is_artist, is_pro, pro_until, email), genre:genres(id, name, type, sort_order)',
           { count: 'exact' },
         )
         .eq('visibility', 'visible')
+        .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false })
         .range(pageNum * pageSize, (pageNum + 1) * pageSize - 1);
 
