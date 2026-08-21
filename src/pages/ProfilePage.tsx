@@ -205,7 +205,7 @@ export function ProfilePage() {
                     : 'Artist Pro'}
                 </p>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Tip balance: ${(((profile.tip_balance_cents || 0) / 100).toFixed(2))} · Platform fee on tips is 10%
+                  {`Tip balance: $${((profile.tip_balance_cents || 0) / 100).toFixed(2)} · Platform fee on tips is 10%`}
                 </p>
               </div>
               <Link
