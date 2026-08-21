@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
 import { HeartHandshake, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { PLATFORM_TIP_FEE_RATE } from '@/types';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
 
-const PRESETS = [300, 500, 1000, 2000]; // cents
+const PRESETS = [300, 500, 1000, 2000];
 
 type Props = {
   artistId: string;
@@ -39,15 +39,41 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
     }
     setBusy(true);
     setError(null);
-    const { error: rpcError } = await supabase.rpc('record_tip', {
+
+    // 1) Create pending tip (10% fee recorded; balance not credited until paid)
+    const { data: tipId, error: rpcError } = await supabase.rpc('record_tip', {
       p_to_user_id: artistId,
       p_content_id: contentId ?? null,
       p_amount_cents: amountCents,
       p_message: message.trim() || null,
     });
-    setBusy(false);
     if (rpcError) {
+      setBusy(false);
       setError(rpcError.message);
+      return;
+    }
+
+    // 2) Stripe Checkout via Edge Function
+    const { data: sessionData, error: fnError } = await supabase.functions.invoke('create-checkout', {
+      body: { kind: 'tip', tip_id: tipId },
+    });
+
+    setBusy(false);
+
+    if (fnError) {
+      setError(
+        fnError.message.includes('Functions') || fnError.message.includes('not')
+          ? 'Payment service unavailable. Add STRIPE_SECRET_KEY and deploy create-checkout. Tip is saved as pending.'
+          : fnError.message,
+      );
+      return;
+    }
+    if (sessionData?.error) {
+      setError(String(sessionData.error));
+      return;
+    }
+    if (sessionData?.url) {
+      window.location.href = sessionData.url as string;
       return;
     }
     setDone(true);
@@ -85,16 +111,16 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
             {!user ? (
               <div className="space-y-4 text-center">
                 <h3 className="text-lg font-medium text-white">Sign in to tip</h3>
-                <p className="text-sm text-neutral-400">Support {artistName} with a tip. Platform fee is 10%.</p>
+                <p className="text-sm text-neutral-400">Support {artistName}. Platform fee is 10%.</p>
                 <Link to="/login" className="inline-flex rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900">
                   Log in
                 </Link>
               </div>
             ) : done ? (
               <div className="space-y-3 text-center">
-                <h3 className="text-lg font-medium text-white">Thank you</h3>
+                <h3 className="text-lg font-medium text-white">Tip pending payment</h3>
                 <p className="text-sm text-neutral-400">
-                  ${(amountCents / 100).toFixed(2)} sent. {artistName} receives ${(artistGets / 100).toFixed(2)} (10% platform fee).
+                  ${(amountCents / 100).toFixed(2)} reserved. Artist receives ${(artistGets / 100).toFixed(2)} after Stripe confirms payment.
                 </p>
                 <button type="button" onClick={() => setOpen(false)} className="rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900">
                   Close
@@ -105,7 +131,7 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
                 <div>
                   <h3 className="text-lg font-medium text-white">Tip {artistName}</h3>
                   <p className="mt-1 text-xs text-neutral-500">
-                    Free to use Kreatif. Platform only earns when you tip — <span className="text-neutral-300">10% fee</span>.
+                    Platform fee <span className="text-neutral-300">10%</span>. Paid via Stripe (test or live). Balance credits only after payment succeeds.
                   </p>
                 </div>
 
@@ -159,7 +185,7 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
                     <span>${(fee / 100).toFixed(2)}</span>
                   </div>
                   <div className="mt-1 flex justify-between border-t border-white/[0.06] pt-1">
-                    <span>Artist receives</span>
+                    <span>Artist receives after payment</span>
                     <span className="text-orange-200">${(artistGets / 100).toFixed(2)}</span>
                   </div>
                 </div>
@@ -172,11 +198,8 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
                   onClick={submit}
                   className="w-full rounded-full bg-white py-2.5 text-sm font-medium text-neutral-900 disabled:opacity-50"
                 >
-                  {busy ? 'Sending…' : `Send $${(amountCents / 100).toFixed(2)} tip`}
+                  {busy ? 'Starting checkout…' : `Pay $${(amountCents / 100).toFixed(2)} with Stripe`}
                 </button>
-                <p className="text-[10px] leading-relaxed text-neutral-600">
-                  Beta: tips are recorded on-platform with the 10% split. Stripe payouts can be connected next so balances move to bank accounts.
-                </p>
               </div>
             )}
           </div>

@@ -15,7 +15,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
 
   if (loading) return <LoadingState message="Checking admin access..." className="min-h-screen" />;
-  if (!profile || profile.email !== 'admin@kreatif.app') return <Navigate to="/" replace />;
+  if (!profile || profile.role !== 'admin') return <Navigate to="/" replace />;
 
   return <>{children}</>;
 }

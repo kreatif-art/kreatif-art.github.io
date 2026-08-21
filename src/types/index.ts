@@ -4,6 +4,7 @@ export interface Profile {
   avatar_url: string | null;
   bio: string;
   is_artist: boolean;
+  role?: 'user' | 'admin';
   is_pro?: boolean;
   pro_until?: string | null;
   tip_balance_cents?: number;

@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { BadgeCheck, BarChart3, Sparkles, Upload, Star, HeartHandshake } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { ARTIST_PRO_PRICE_USD, FREE_UPLOADS_PER_MONTH } from '@/types';
-import { useState } from 'react';
 
 const FEATURES = [
   {
@@ -19,12 +19,12 @@ const FEATURES = [
   {
     icon: Star,
     title: 'Featured eligibility',
-    body: 'One featured spotlight per month on a genre reel or home rotation (labeled, not pay-for-rank on leaderboard).',
+    body: 'Feature up to 3 works at a time (30 days each) on genre reels — labeled, not pay-for-rank on leaderboard.',
   },
   {
     icon: Upload,
     title: 'Higher upload allowance',
-    body: `Free artists get ${FREE_UPLOADS_PER_MONTH} uploads / month. Pro is effectively unlimited for normal use (fair-use cap).`,
+    body: `Free artists get ${FREE_UPLOADS_PER_MONTH} uploads / month. Pro removes the free-tier monthly cap.`,
   },
   {
     icon: HeartHandshake,
@@ -40,23 +40,43 @@ const FEATURES = [
 
 export function ProPage() {
   const { user, profile, refreshProfile } = useAuth();
+  const [params] = useSearchParams();
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
   const isPro = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
 
-  const activateDemo = async () => {
+  useEffect(() => {
+    if (params.get('pro') === 'success') {
+      setMsg('Payment received. Pro activates when Stripe webhook confirms (usually a few seconds). Refresh profile if needed.');
+      refreshProfile();
+    }
+    if (params.get('pro') === 'cancel') {
+      setMsg('Checkout cancelled. No charge.');
+    }
+  }, [params, refreshProfile]);
+
+  const startCheckout = async () => {
     if (!user) return;
     setBusy(true);
     setMsg(null);
-    const { error } = await supabase.rpc('activate_pro', { p_months: 1 });
+    const { data, error } = await supabase.functions.invoke('create-checkout', {
+      body: { kind: 'pro' },
+    });
     setBusy(false);
     if (error) {
-      setMsg(error.message);
+      setMsg(
+        'Stripe is not fully configured yet. Set STRIPE_SECRET_KEY on the create-checkout function and deploy it. Admins can still grant Pro in the dashboard.',
+      );
       return;
     }
-    await refreshProfile();
-    setMsg('Artist Pro activated for 1 month (beta). Stripe billing can replace this demo activation.');
+    if (data?.error) {
+      setMsg(String(data.error));
+      return;
+    }
+    if (data?.url) {
+      window.location.href = data.url as string;
+    }
   };
 
   return (
@@ -71,8 +91,8 @@ export function ProPage() {
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-400">
           Kreatif stays free to browse, listen, and upload. The platform only takes a cut when fans tip (10%).
-          Pro is optional — <span className="text-neutral-200">${ARTIST_PRO_PRICE_USD.toFixed(2)}/month</span> for
-          analytics, badge, featured eligibility, and higher limits.
+          Pro is optional — <span className="text-neutral-200">${ARTIST_PRO_PRICE_USD.toFixed(2)}/month</span> via
+          Stripe for analytics, badge, featured eligibility, and higher limits.
         </p>
 
         <div className="mt-8 flex flex-wrap items-end gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
@@ -92,10 +112,10 @@ export function ProPage() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={activateDemo}
+                onClick={startCheckout}
                 className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-neutral-900 disabled:opacity-50"
               >
-                {busy ? 'Activating…' : 'Activate Pro (beta)'}
+                {busy ? 'Redirecting…' : 'Subscribe with Stripe'}
               </button>
             )
           ) : (
@@ -124,7 +144,7 @@ export function ProPage() {
           <p className="font-medium text-neutral-200">Free forever includes</p>
           <p className="mt-2">
             Browse, play, like, subscribe, upload (up to {FREE_UPLOADS_PER_MONTH}/month), and receive tips. No charge
-            unless a fan tips you — then Kreatif keeps 10% and you keep 90%.
+            unless a fan tips you — then Kreatif keeps 10% and you keep 90% after payment clears.
           </p>
         </div>
       </div>
