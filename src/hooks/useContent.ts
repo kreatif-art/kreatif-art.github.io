@@ -23,6 +23,8 @@ interface UseContentOptions {
   type?: 'music' | 'art';
   genreId?: string | null;
   search?: string;
+  /** title = work name; artist = creator display name */
+  searchScope?: 'title' | 'artist';
   userId?: string;
   pageSize?: number;
 }
@@ -31,6 +33,7 @@ export function useContent({
   type,
   genreId,
   search,
+  searchScope = 'title',
   userId,
   pageSize = PAGE_SIZE,
 }: UseContentOptions = {}) {
@@ -59,8 +62,13 @@ export function useContent({
       if (type) query = query.eq('type', type);
       if (genreId) query = query.eq('genre_id', genreId);
       if (userId) query = query.eq('user_id', userId);
-      if (search) {
-        query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      if (search && search.trim()) {
+        const q = search.trim();
+        if (searchScope === 'artist') {
+          query = query.ilike('profiles.display_name', `%${q}%`);
+        } else {
+          query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+        }
       }
 
       const { data, error: queryError, count } = await query;
@@ -96,7 +104,7 @@ export function useContent({
       setItems((prev) => (replace ? contentItems : [...prev, ...contentItems]));
       setLoading(false);
     },
-    [type, genreId, search, userId, pageSize],
+    [type, genreId, search, searchScope, userId, pageSize],
   );
 
   useEffect(() => {
