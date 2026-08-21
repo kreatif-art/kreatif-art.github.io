@@ -139,22 +139,24 @@ export function ArtistProfilePage() {
                 <Edit3 className="h-4 w-4" /> Edit profile
               </Link>
             ) : user ? (
-              <button
-                onClick={handleSubscribe}
-                className={cn(
-                  'flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-colors',
-                  isSubscribed
-                    ? 'border border-neutral-700 text-neutral-300 hover:bg-neutral-800'
-                    : 'bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:opacity-90',
-                )}
-              >
-                {isSubscribed ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-                {isSubscribed ? 'Subscribed' : 'Subscribe'}
-              </button>
-              {user && user.id !== artist.id && (
+              <>
+                <button
+                  onClick={handleSubscribe}
+                  className={cn(
+                    'flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-colors',
+                    isSubscribed
+                      ? 'border border-neutral-700 text-neutral-300 hover:bg-neutral-800'
+                      : 'bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:opacity-90',
+                  )}
+                >
+                  {isSubscribed ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+                  {isSubscribed ? 'Subscribed' : 'Subscribe'}
+                </button>
                 <TipButton artistId={artist.id} artistName={artist.display_name} />
-              )}
-            ) : null}
+              </>
+            ) : (
+              <TipButton artistId={artist.id} artistName={artist.display_name} />
+            )}
           </div>
         </div>
 
