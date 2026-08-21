@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Heart, Music, Play } from 'lucide-react';
 import type { ContentItem } from '@/types';
 import { usePlayer } from '@/context/PlayerContext';
-import { formatNumber, formatRelativeTime, cn } from '@/lib/utils';
+import { cn, formatRelativeTime, formatNumber, formatDuration } from '@/lib/utils';
 
 export function ContentCard({ item }: { item: ContentItem }) {
   const { play, currentTrack, isPlaying, togglePlay } = usePlayer();
@@ -166,8 +166,17 @@ export function ContentCard({ item }: { item: ContentItem }) {
         <p className="mt-0.5 truncate text-xs text-neutral-400">
           {item.profiles?.display_name || 'Unknown artist'}
         </p>
-        <div className="mt-2.5 flex items-center justify-between">
-          <span className="text-[11px] text-neutral-500">{formatRelativeTime(item.created_at)}</span>
+        <div className="mt-2.5 flex items-center justify-between gap-2">
+          <span className="text-[11px] text-neutral-500">
+            {isMusic && item.duration_sec ? (
+              <span className="tabular-nums text-neutral-400">{formatDuration(item.duration_sec)}</span>
+            ) : (
+              formatRelativeTime(item.created_at)
+            )}
+            {isMusic && item.duration_sec ? (
+              <span className="text-neutral-600"> · {formatRelativeTime(item.created_at)}</span>
+            ) : null}
+          </span>
           {item.like_count !== undefined && (
             <span className="flex items-center gap-1 text-[11px] text-neutral-400">
               <Heart className="h-3 w-3" />
