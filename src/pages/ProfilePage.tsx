@@ -298,7 +298,7 @@ export function ProfilePage() {
                     ['Subscribers', stats.subscribers],
                     ['Uploads (month)', stats.uploadsThisMonth],
                     ['Featured active', stats.featured],
-                    ['Tips earned', f"${(stats.tipsReceived / 100).toFixed(2)}"],
+                    ['Tips earned', `$${(stats.tipsReceived / 100).toFixed(2)}`],
                   ].map(([label, val]) => (
                     <div key={String(label)} className="rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2">
                       <p className="text-lg font-semibold text-white">{val}</p>
