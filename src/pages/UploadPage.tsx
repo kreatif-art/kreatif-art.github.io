@@ -247,20 +247,16 @@ export function UploadPage() {
           <UploadIcon className="h-6 w-6 text-orange-400" />
           Upload your work
         </h1>
-        {(() => {
-          const pro = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
-          return (
-            <p className="mb-6 text-xs text-neutral-500">
-              {pro
-                ? 'Artist Pro — higher upload allowance (no free-tier monthly cap).'
-                : `Free plan — up to ${FREE_UPLOADS_PER_MONTH} uploads per month. `}
-              }
-              {!pro && (
-                <Link to="/pro" className="text-orange-300/90 hover:underline">Upgrade to Pro</Link>
-              )}
-            </p>
-          );
-        })()}
+        <p className="mb-6 text-xs text-neutral-500">
+          {profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()) ? (
+            'Artist Pro — higher upload allowance (no free-tier monthly cap).'
+          ) : (
+            <>
+              Free plan — up to {FREE_UPLOADS_PER_MONTH} uploads per month.{' '}
+              <Link to="/pro" className="text-orange-300/90 hover:underline">Upgrade to Pro</Link>
+            </>
+          )}
+        </p>
 
         {/* Type toggle */}
         <div className="mb-6 flex gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-1">
