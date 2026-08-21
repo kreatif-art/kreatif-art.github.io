@@ -22,6 +22,7 @@ import { AdminPage } from '@/pages/AdminPage';
 import { TermsPage } from '@/pages/TermsPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
 import { HowToUploadPage } from '@/pages/HowToUploadPage';
+import { ProPage } from '@/pages/ProPage';
 
 function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
                   <Route path="/how-to-upload" element={<HowToUploadPage />} />
+                  <Route path="/pro" element={<ProPage />} />
                   <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                   <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
                   <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />

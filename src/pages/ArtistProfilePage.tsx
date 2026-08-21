@@ -8,6 +8,7 @@ import { LoadingState, ErrorState, EmptyState } from '@/components/States';
 import { getInitials, formatNumber, cn } from '@/lib/utils';
 import { Music, Image, UserPlus, UserCheck, Heart, Edit3 } from 'lucide-react';
 import type { Profile } from '@/types';
+import { TipButton } from '@/components/TipButton';
 
 export function ArtistProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -123,6 +124,9 @@ export function ArtistProfilePage() {
           </div>
           <div className="flex-1 text-center sm:text-left">
             <h1 className="text-2xl font-bold text-white">{artist.display_name}</h1>
+            {artist.is_pro && (
+              <span className="rounded-full border border-orange-400/30 bg-orange-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-orange-200">Pro</span>
+            )}
             {artist.is_artist && (
               <span className="mt-1 inline-block rounded-full bg-orange-500/20 px-2.5 py-0.5 text-xs font-medium text-orange-400">
                 Artist
@@ -147,6 +151,9 @@ export function ArtistProfilePage() {
                 {isSubscribed ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
                 {isSubscribed ? 'Subscribed' : 'Subscribe'}
               </button>
+              {user && user.id !== artist.id && (
+                <TipButton artistId={artist.id} artistName={artist.display_name} />
+              )}
             ) : null}
           </div>
         </div>

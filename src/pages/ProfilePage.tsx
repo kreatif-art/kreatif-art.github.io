@@ -194,6 +194,30 @@ export function ProfilePage() {
         )}
 
         {/* Upload CTA */}
+        
+        {profile.is_artist && (
+          <div className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-white">
+                  {profile.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date())
+                    ? 'Artist Pro active'
+                    : 'Artist Pro'}
+                </p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  Tip balance: ${(((profile.tip_balance_cents || 0) / 100).toFixed(2))} · Platform fee on tips is 10%
+                </p>
+              </div>
+              <Link
+                to="/pro"
+                className="rounded-full border border-orange-400/30 bg-orange-500/10 px-4 py-2 text-sm text-orange-100 hover:bg-orange-500/20"
+              >
+                {profile.is_pro ? 'Manage Pro' : 'Go Pro · $9.90/mo'}
+              </Link>
+            </div>
+          </div>
+        )}
+
         {!profile.is_artist && (
           <div className="mt-6 rounded-2xl border border-neutral-800 bg-neutral-900 p-6 text-center">
             <p className="text-sm text-neutral-400">Want to share your work? Turn on Artist Mode to start uploading.</p>

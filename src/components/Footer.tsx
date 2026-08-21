@@ -21,6 +21,9 @@ export function Footer() {
             <Link to="/how-to-upload" className="hover:text-neutral-200">
               How to upload
             </Link>
+            <Link to="/pro" className="hover:text-neutral-200">
+              Artist Pro
+            </Link>
             <Link to="/terms" className="hover:text-neutral-200">
               Terms
             </Link>

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useGenres } from '@/hooks/useContent';
 import { LoadingState } from '@/components/States';
-import { ORIGINALITY_ATTESTATION_TEXT } from '@/types';
+import { ORIGINALITY_ATTESTATION_TEXT, FREE_UPLOADS_PER_MONTH } from '@/types';
 import { checkGenreAlignment } from '@/lib/genreMatch';
 import { Upload as UploadIcon, Music, Image, Loader2, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -130,6 +130,21 @@ export function UploadPage() {
     if (!attested) {
       setError('You must confirm the originality attestation.');
       return;
+    }
+    const isPro = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
+    if (!isPro) {
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+      const { count } = await supabase
+        .from('content')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', monthStart.toISOString());
+      if ((count || 0) >= FREE_UPLOADS_PER_MONTH) {
+        setError(`Free plan allows ${FREE_UPLOADS_PER_MONTH} uploads per month. Upgrade to Artist Pro for higher limits.`);
+        return;
+      }
     }
 
     setUploading(true);

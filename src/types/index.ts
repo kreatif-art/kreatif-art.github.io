@@ -4,10 +4,31 @@ export interface Profile {
   avatar_url: string | null;
   bio: string;
   is_artist: boolean;
+  is_pro?: boolean;
+  pro_until?: string | null;
+  tip_balance_cents?: number;
   email: string;
   created_at: string;
   updated_at: string;
 }
+
+export interface Tip {
+  id: string;
+  from_user_id: string | null;
+  to_user_id: string;
+  content_id: string | null;
+  amount_cents: number;
+  platform_fee_cents: number;
+  artist_amount_cents: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  message: string | null;
+  created_at: string;
+}
+
+export const PLATFORM_TIP_FEE_RATE = 0.1;
+export const ARTIST_PRO_PRICE_USD = 9.9;
+export const FREE_UPLOADS_PER_MONTH = 20;
 
 export interface Genre {
   id: string;

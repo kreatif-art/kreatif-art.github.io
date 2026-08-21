@@ -7,6 +7,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { ImageLightbox } from '@/components/ImageLightbox';
 import { LoadingState, ErrorState } from '@/components/States';
 import { ContentCard } from '@/components/ContentCard';
+import { TipButton } from '@/components/TipButton';
 import { useContent } from '@/hooks/useContent';
 import type { ContentItem, Profile } from '@/types';
 import { formatRelativeTime, formatDuration, formatNumber, getInitials, cn } from '@/lib/utils';
@@ -316,6 +317,9 @@ export function ContentDetailPage() {
                 <Heart className={cn('h-4 w-4', isLiked && 'fill-current')} />
                 {formatNumber(likeCount)} {likeCount === 1 ? 'Like' : 'Likes'}
               </button>
+              {user && user.id !== item.user_id && (
+                <TipButton artistId={item.user_id} artistName={artist.display_name} contentId={item.id} />
+              )}
 
               <button
                 onClick={() => {
