@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, Music, Image, Trophy, Upload, User, LogOut, Menu, X, Home } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn, getInitials } from '@/lib/utils';
@@ -8,22 +8,12 @@ import { cn, getInitials } from '@/lib/utils';
 export function Navbar() {
   const { user, profile, signOut } = useAuth();
   const { currentTrack } = usePlayer();
-  const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
-  };
 
   const navLinks = [
     { to: '/', label: 'Home', icon: Home },
@@ -64,19 +54,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <form onSubmit={handleSearch} className="hidden sm:block">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-40 rounded-lg border border-neutral-800 bg-neutral-900 py-2 pl-9 pr-3 text-sm text-neutral-200 placeholder-neutral-500 transition-all focus:w-56 focus:border-neutral-600 focus:outline-none"
-              />
-            </div>
-          </form>
-
           {user ? (
             <div className="hidden items-center gap-2 md:flex">
               <Link
@@ -133,18 +110,6 @@ export function Navbar() {
 
       {mobileOpen && (
         <div className="border-t border-neutral-800 bg-neutral-950 px-4 py-4 md:hidden">
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-900 py-2 pl-9 pr-3 text-sm text-neutral-200 placeholder-neutral-500 focus:border-neutral-600 focus:outline-none"
-              />
-            </div>
-          </form>
           <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { PlayerProvider } from '@/context/PlayerContext';
 import { Navbar } from '@/components/Navbar';
@@ -17,7 +17,6 @@ import { ContentDetailPage } from '@/pages/ContentDetailPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { ArtistProfilePage } from '@/pages/ArtistProfilePage';
 import { LeaderboardPage } from '@/pages/LeaderboardPage';
-import { SearchPage } from '@/pages/SearchPage';
 import { UploadPage } from '@/pages/UploadPage';
 import { AdminPage } from '@/pages/AdminPage';
 import { TermsPage } from '@/pages/TermsPage';
@@ -63,7 +62,7 @@ function App() {
                   <Route path="/content/:id" element={<ContentDetailPage />} />
                   <Route path="/artist/:id" element={<ArtistProfilePage />} />
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
-                  <Route path="/search" element={<SearchPage />} />
+                  <Route path="/search" element={<Navigate to="/browse/music" replace />} />
                   <Route path="/terms" element={<TermsPage />} />
                   <Route path="/privacy" element={<PrivacyPage />} />
                   <Route path="/how-to-upload" element={<HowToUploadPage />} />
