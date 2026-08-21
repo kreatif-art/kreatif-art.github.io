@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useGenres } from '@/hooks/useContent';
 import { LoadingState } from '@/components/States';
 import { ORIGINALITY_ATTESTATION_TEXT } from '@/types';
+import { checkGenreAlignment } from '@/lib/genreMatch';
 import { Upload as UploadIcon, Music, Image, Loader2, AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,7 @@ export function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [genreWarning, setGenreWarning] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -108,6 +110,22 @@ export function UploadPage() {
     if (!genreId) {
       setError('Please select a genre.');
       return;
+    }
+    const selectedGenre = genres.find((g) => g.id === genreId);
+    if (selectedGenre) {
+      const match = checkGenreAlignment({
+        type,
+        genreName: selectedGenre.name,
+        title: title.trim(),
+        description: description.trim(),
+      });
+      if (match.severity === 'strong_mismatch') {
+        setError(match.message || 'Genre does not seem to match this work. Please review.');
+        return;
+      }
+      if (match.severity === 'warn' && match.message) {
+        setGenreWarning(match.message);
+      }
     }
     if (!attested) {
       setError('You must confirm the originality attestation.');
@@ -238,6 +256,9 @@ export function UploadPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {genreWarning && (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200/90">{genreWarning}</p>
+          )}
           {error && (
             <div className="flex items-center gap-2 rounded-lg border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
               <AlertCircle className="h-4 w-4 shrink-0" /> {error}
