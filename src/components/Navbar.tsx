@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home } from 'lucide-react';
+import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home, User } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn, getInitials } from '@/lib/utils';
@@ -56,13 +56,15 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <div className="hidden items-center gap-2 md:flex">
-              <Link
-                to="/upload"
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              >
-                <Upload className="h-4 w-4" />
-                Upload
-              </Link>
+              {profile?.is_artist && (
+                <Link
+                  to="/upload"
+                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  <Upload className="h-4 w-4" />
+                  Upload
+                </Link>
+              )}
               <Link
                 to="/profile"
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-neutral-800 text-sm font-semibold text-neutral-200 ring-2 ring-transparent transition-all hover:ring-neutral-600"
@@ -102,6 +104,7 @@ export function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="rounded-lg p-2 text-neutral-300 md:hidden"
+            aria-label="Menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -128,13 +131,15 @@ export function Navbar() {
             ))}
             {user ? (
               <>
-                <Link
-                  to="/upload"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
-                >
-                  <Upload className="h-4 w-4" />
-                  Upload
-                </Link>
+                {profile?.is_artist && (
+                  <Link
+                    to="/upload"
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Upload
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
@@ -151,24 +156,26 @@ export function Navbar() {
                 </button>
               </>
             ) : (
-              <div className="mt-2 flex gap-2">
+              <>
                 <Link
                   to="/login"
-                  className="flex-1 rounded-lg border border-neutral-700 px-4 py-2 text-center text-sm font-medium text-neutral-200"
+                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-300 hover:text-white"
                 >
                   Log in
                 </Link>
                 <Link
                   to="/signup"
-                  className="flex-1 rounded-lg bg-white px-4 py-2 text-center text-sm font-semibold text-neutral-900"
+                  className="rounded-lg bg-white px-3 py-2.5 text-center text-sm font-semibold text-neutral-900"
                 >
                   Sign up
                 </Link>
-              </div>
+              </>
             )}
           </nav>
         </div>
       )}
+      {/* Spacer when mini player visible — optional reserved for layout */}
+      {currentTrack ? null : null}
     </header>
   );
 }
