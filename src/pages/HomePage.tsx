@@ -101,6 +101,8 @@ export function HomePage() {
       </section>
 
 
+      <SoundSightChapter />
+
       {/* Sound & Sight pairs */}
       {featuredPairs.length > 0 && (
         <section className="border-b border-white/[0.06] py-10 sm:py-12">
@@ -161,27 +163,9 @@ export function HomePage() {
         </section>
       )}
 
-      <SoundSightChapter />
 
 
 
-      {/* ===== Leaderboard CTA ===== */}
-      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6" data-fade-up data-delay="3">
-        <Link to="/leaderboard" className="group block">
-          <div className="flex items-center justify-between rounded-2xl border border-white/[0.08] bg-white/[0.03] px-6 py-5 backdrop-blur-sm transition-colors hover:border-white/[0.14] hover:bg-white/[0.05]">
-            <div className="flex items-center gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500">
-                <Trophy className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-base font-medium text-white">Top 10</h3>
-                <p className="text-sm text-neutral-500">Most-loved artists this season</p>
-              </div>
-            </div>
-            <ArrowRight className="h-5 w-5 text-neutral-500 transition-all group-hover:translate-x-0.5 group-hover:text-white" />
           </div>
-        </Link>
-      </section>
-    </div>
   );
 }
