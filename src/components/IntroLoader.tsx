@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Gavel } from 'lucide-react';
 
 /**
- * Sonar-inspired intro: full-screen dark loader with counting percentage,
- * then reveals the app. Shows once per session (sessionStorage).
+ * Intro foyer: full-screen loader with auction gavel motif + percentage.
+ * Shows once per session (sessionStorage).
  */
 export function IntroLoader({ onDone }: { onDone?: () => void }) {
   const [progress, setProgress] = useState(0);
@@ -21,17 +22,14 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
       return;
     }
 
-    let frame = 0;
     let raf = 0;
     const start = performance.now();
     const duration = 1600;
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - t, 3);
-      const next = Math.round(eased * 100);
-      setProgress(next);
+      setProgress(Math.round(eased * 100));
       if (t < 1) {
         raf = requestAnimationFrame(tick);
       } else {
@@ -47,7 +45,6 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
           onDone?.();
         }, 900);
       }
-      frame++;
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
@@ -62,7 +59,14 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
       }`}
       aria-hidden={leaving}
     >
-      <p className="label-caps mb-8 text-neutral-500">Kreatif</p>
+      <p className="label-caps mb-6 text-neutral-500">Kreatif</p>
+
+      {/* Auction gavel — foyer emblem (replaces paintbrush) */}
+      <div className="intro-gavel-wrap mb-8" aria-hidden>
+        <Gavel className="intro-gavel h-14 w-14 text-orange-300/90 sm:h-16 sm:w-16" strokeWidth={1.25} />
+        <span className="intro-gavel-strike" />
+      </div>
+
       <div className="hero-title text-7xl text-white sm:text-8xl md:text-9xl">
         {String(progress).padStart(2, '0')}
       </div>
@@ -72,7 +76,7 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
           style={{ width: `${progress}%` }}
         />
       </div>
-      <p className="mt-6 text-xs uppercase tracking-[0.2em] text-neutral-600">Loading</p>
+      <p className="mt-6 text-xs uppercase tracking-[0.2em] text-neutral-600">Opening the room</p>
     </div>
   );
 }

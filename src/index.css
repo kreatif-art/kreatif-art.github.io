@@ -504,3 +504,42 @@
   .chapter-panel {
     min-width: 100vw;
   }
+
+
+/* ---- Intro foyer: auction gavel ---- */
+.intro-gavel-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4.5rem;
+  width: 4.5rem;
+}
+.intro-gavel {
+  transform-origin: 70% 80%;
+  animation: gavel-tap 0.9s ease-in-out infinite;
+}
+.intro-gavel-strike {
+  position: absolute;
+  bottom: 0.15rem;
+  left: 50%;
+  width: 1.75rem;
+  height: 2px;
+  margin-left: -0.9rem;
+  border-radius: 999px;
+  background: rgba(251, 146, 60, 0.35);
+  transform: scaleX(0.4);
+  opacity: 0;
+  animation: gavel-block 0.9s ease-in-out infinite;
+}
+@keyframes gavel-tap {
+  0%, 100% { transform: rotate(-18deg); }
+  35% { transform: rotate(12deg); }
+  45% { transform: rotate(8deg); }
+  60% { transform: rotate(-14deg); }
+}
+@keyframes gavel-block {
+  0%, 30% { opacity: 0; transform: scaleX(0.3); }
+  38% { opacity: 0.9; transform: scaleX(1); }
+  55%, 100% { opacity: 0; transform: scaleX(0.5); }
+}
