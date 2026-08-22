@@ -60,16 +60,30 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
 
     setBusy(false);
 
+    // Friendly handling when Edge Function / Stripe is not deployed yet
+    const rawFn = fnError?.message || '';
+    const rawData = sessionData && typeof sessionData === 'object' ? String((sessionData as { error?: string }).error || '') : '';
+    const checkoutUnavailable =
+      !!fnError ||
+      /failed to send|edge function|not found|404|503|Failed to fetch|network/i.test(rawFn + rawData) ||
+      (sessionData && (sessionData as { error?: string }).error && /STRIPE|not configured|SECRET/i.test(rawData));
+
+    if (checkoutUnavailable) {
+      // Tip row already saved as pending — show calm beta message instead of a hard error
+      setDone(true);
+      setError(null);
+      return;
+    }
     if (fnError) {
-      setError(
-        fnError.message.includes('Functions') || fnError.message.includes('not')
-          ? 'Payment service unavailable. Add STRIPE_SECRET_KEY and deploy create-checkout. Tip is saved as pending.'
-          : fnError.message,
-      );
+      setError('Something went wrong starting checkout. Your tip was saved as pending — please try again later.');
       return;
     }
     if (sessionData?.error) {
-      setError(String(sessionData.error));
+      setError(
+        /STRIPE|not configured|SECRET/i.test(String(sessionData.error))
+          ? 'Card checkout is not enabled yet. Your tip was saved as pending and will complete when payments go live.'
+          : String(sessionData.error),
+      );
       return;
     }
     if (sessionData?.url) {
@@ -118,9 +132,13 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
               </div>
             ) : done ? (
               <div className="space-y-3 text-center">
-                <h3 className="text-lg font-medium text-white">Tip pending payment</h3>
+                <h3 className="text-lg font-medium text-white">Tip recorded</h3>
                 <p className="text-sm text-neutral-400">
-                  ${(amountCents / 100).toFixed(2)} reserved. Artist receives ${(artistGets / 100).toFixed(2)} after Stripe confirms payment.
+                  ${(amountCents / 100).toFixed(2)} is saved as a pending tip
+                  (artist share ${(artistGets / 100).toFixed(2)} after the 10% platform fee).
+                </p>
+                <p className="text-xs leading-relaxed text-neutral-500">
+                  Card checkout is in beta and not live on this environment yet. When Stripe is connected, pending tips can be completed — the artist is not paid until payment succeeds.
                 </p>
                 <button type="button" onClick={() => setOpen(false)} className="rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900">
                   Close
@@ -131,7 +149,7 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
                 <div>
                   <h3 className="text-lg font-medium text-white">Tip {artistName}</h3>
                   <p className="mt-1 text-xs text-neutral-500">
-                    Platform fee <span className="text-neutral-300">10%</span>. Paid via Stripe (test or live). Balance credits only after payment succeeds.
+                    Platform fee <span className="text-neutral-300">10%</span>. Tips are held as pending until card payment succeeds (Stripe). Checkout is rolling out in beta.
                   </p>
                 </div>
 
