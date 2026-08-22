@@ -1,6 +1,7 @@
 import { Play, Pause, X, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { usePlayer } from '@/context/PlayerContext';
+import { AudioBars } from '@/components/AudioBars';
 import { formatDuration, cn } from '@/lib/utils';
 
 export function MiniPlayer() {
@@ -41,6 +42,8 @@ export function MiniPlayer() {
             </p>
           </div>
         </Link>
+
+        <AudioBars className="hidden sm:block" bars={20} height={26} />
 
         <div className="hidden flex-1 items-center gap-3 sm:flex">
           <span className="text-xs tabular-nums text-neutral-400">{formatDuration(currentTime)}</span>

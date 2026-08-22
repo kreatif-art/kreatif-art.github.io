@@ -102,7 +102,12 @@ export function SynestheticBackground() {
       (tick as unknown as { last?: number }).last = ts;
       time += dt;
 
-      const energy = playingRef.current ? 1.65 : 1;
+      let energy = playingRef.current ? 1.35 : 1;
+    const snap = getAnalyserRef.current?.();
+    if (snap && playingRef.current) {
+      // Map analyser energy/bass into motion multiplier (1 → ~2.4)
+      energy = 1.15 + snap.energy * 1.1 + snap.bass * 0.9;
+    }
       const speedMul = playingRef.current ? 1.8 : 1;
 
       pointer.x += (pointer.tx - pointer.x) * 0.04;
