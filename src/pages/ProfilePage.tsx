@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useContent } from '@/hooks/useContent';
 import { ContentCard } from '@/components/ContentCard';
 import { LoadingState, EmptyState } from '@/components/States';
 import { getInitials, cn } from '@/lib/utils';
-import { Music, Image, Upload, LogOut, Camera, Loader2, Check, Star, BarChart3, BadgeCheck } from 'lucide-react';
+import { Music, Image, Upload, LogOut, Camera, Loader2, Check, Star, BarChart3, BadgeCheck, Banknote } from 'lucide-react';
 import { FREE_UPLOADS_PER_MONTH } from '@/types';
 
 export function ProfilePage() {
@@ -26,8 +26,25 @@ export function ProfilePage() {
   const [stats, setStats] = useState({ likes: 0, subscribers: 0, uploadsThisMonth: 0, featured: 0, tipsReceived: 0 });
   const [featBusy, setFeatBusy] = useState<string | null>(null);
   const [featMsg, setFeatMsg] = useState<string | null>(null);
+  const [payoutMsg, setPayoutMsg] = useState<string | null>(null);
+  const [payoutBusy, setPayoutBusy] = useState(false);
+  const [connectBusy, setConnectBusy] = useState(false);
+  const [searchParams] = useSearchParams();
+
 
   const isProActive = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
+
+  useEffect(() => {
+    const c = searchParams.get('connect');
+    if (c === 'return') {
+      setPayoutMsg('Stripe onboarding returned — status updates when webhooks are configured. Refresh in a moment.');
+      refreshProfile();
+    }
+    if (c === 'refresh') {
+      setPayoutMsg('Onboarding link expired. Start Connect again.');
+    }
+  }, [searchParams, refreshProfile]);
+
 
   useEffect(() => {
     if (!user) return;
@@ -143,6 +160,38 @@ export function ProfilePage() {
   const handleToggleArtist = async () => {
     if (!profile) return;
     await updateProfile({ is_artist: !profile.is_artist });
+    await refreshProfile();
+  };
+
+
+  const startConnect = async () => {
+    setConnectBusy(true);
+    setPayoutMsg(null);
+    const { data, error } = await supabase.functions.invoke('connect-onboard', { body: {} });
+    setConnectBusy(false);
+    if (error || data?.error) {
+      setPayoutMsg(
+        'Stripe Connect is not fully configured yet (deploy connect-onboard + STRIPE_SECRET_KEY). You can still receive tip balance on Kreatif.',
+      );
+      return;
+    }
+    if (data?.url) window.location.href = data.url as string;
+  };
+
+  const requestPayout = async () => {
+    setPayoutBusy(true);
+    setPayoutMsg(null);
+    const { data, error } = await supabase.functions.invoke('process-payout', { body: {} });
+    setPayoutBusy(false);
+    if (error || data?.error) {
+      setPayoutMsg(
+        error?.message?.includes('Edge Function') || error?.message?.includes('Failed')
+          ? 'Payout service unavailable until Stripe Connect functions are deployed. Your tip balance stays on your profile.'
+          : (data?.error || error?.message || 'Payout failed'),
+      );
+      return;
+    }
+    setPayoutMsg(`Payout submitted (${data?.transfer_id || 'ok'}). Funds go to your Stripe Express account.`);
     await refreshProfile();
   };
 
@@ -285,6 +334,47 @@ export function ProfilePage() {
                   {isProActive ? 'Manage Pro' : 'Go Pro · $9.90/mo'}
                 </Link>
               </div>
+            </div>
+
+            
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+              <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+                <Banknote className="h-4 w-4 text-orange-300/90" /> Tips &amp; payouts
+              </div>
+              <p className="text-xs text-neutral-500">
+                Fans tip the platform; you are credited <span className="text-neutral-300">90%</span> after payment clears.
+                Connect Stripe Express to withdraw to your bank.
+              </p>
+              <p className="mt-2 text-lg font-semibold text-white">
+                ${((profile.tip_balance_cents || 0) / 100).toFixed(2)}
+                <span className="ml-2 text-xs font-normal text-neutral-500">available</span>
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {!profile.payouts_enabled ? (
+                  <button
+                    type="button"
+                    disabled={connectBusy}
+                    onClick={startConnect}
+                    className="rounded-full bg-white px-4 py-2 text-sm font-medium text-neutral-900 disabled:opacity-50"
+                  >
+                    {connectBusy ? 'Opening Stripe…' : profile.stripe_account_id ? 'Continue Stripe setup' : 'Connect Stripe Express'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={payoutBusy || (profile.tip_balance_cents || 0) < 500}
+                    onClick={requestPayout}
+                    className="rounded-full bg-white px-4 py-2 text-sm font-medium text-neutral-900 disabled:opacity-50"
+                  >
+                    {payoutBusy ? 'Processing…' : 'Request payout'}
+                  </button>
+                )}
+              </div>
+              {profile.payouts_enabled && (
+                <p className="mt-2 text-[11px] text-emerald-400/90">Payouts enabled on Stripe Express</p>
+              )}
+              {payoutMsg && <p className="mt-2 text-xs text-neutral-400">{payoutMsg}</p>}
+              <p className="mt-2 text-[11px] text-neutral-600">Minimum payout $5.00. Stripe must be configured on the server for transfers.</p>
             </div>
 
             {isProActive && (

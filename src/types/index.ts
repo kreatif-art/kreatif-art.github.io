@@ -8,6 +8,9 @@ export interface Profile {
   is_pro?: boolean;
   pro_until?: string | null;
   tip_balance_cents?: number;
+  stripe_account_id?: string | null;
+  stripe_onboarding_complete?: boolean;
+  payouts_enabled?: boolean;
   email: string;
   created_at: string;
   updated_at: string;

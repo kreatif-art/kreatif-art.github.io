@@ -21,6 +21,36 @@ serve(async (req) => {
     return new Response("invalid json", { status: 400 });
   }
 
+  if (event.type === "account.updated") {
+    const account = event.data.object as {
+      id: string;
+      charges_enabled?: boolean;
+      payouts_enabled?: boolean;
+      details_submitted?: boolean;
+      metadata?: { kreatif_user_id?: string };
+    };
+    const userId = account.metadata?.kreatif_user_id;
+    if (userId) {
+      await service.rpc("set_stripe_connect", {
+        p_user_id: userId,
+        p_account_id: account.id,
+        p_onboarding_complete: !!account.details_submitted,
+        p_payouts_enabled: !!account.payouts_enabled,
+      });
+    } else {
+      // lookup by stripe_account_id
+      const { data: prof } = await service.from("profiles").select("id").eq("stripe_account_id", account.id).maybeSingle();
+      if (prof?.id) {
+        await service.rpc("set_stripe_connect", {
+          p_user_id: prof.id,
+          p_account_id: account.id,
+          p_onboarding_complete: !!account.details_submitted,
+          p_payouts_enabled: !!account.payouts_enabled,
+        });
+      }
+    }
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as {
       id: string;
