@@ -110,3 +110,20 @@ export const REPORT_REASONS = [
 ] as const;
 
 export const PAGE_SIZE = 12;
+
+
+export type PairKind = 'artist' | 'curated' | 'editorial';
+
+export interface ContentPair {
+  id: string;
+  music_id: string;
+  art_id: string;
+  created_by: string;
+  kind: PairKind;
+  note: string | null;
+  status: 'visible' | 'hidden';
+  created_at: string;
+  music?: ContentItem;
+  art?: ContentItem;
+  creator?: Profile;
+}

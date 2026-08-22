@@ -1,14 +1,16 @@
 /* BUILD_MARKER_V2 */
 import { Link } from 'react-router-dom';
-import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users } from 'lucide-react';
+import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users, Link2 } from 'lucide-react';
 import { useFadeUpRoot } from '@/hooks/useFadeUp';
 import { DailyShowcase } from '@/components/DailyShowcase';
 import { SoundSightChapter } from '@/components/SoundSightChapter';
 import { useAuth } from '@/context/AuthContext';
+import { useFeaturedPairs } from '@/hooks/usePairs';
 
 export function HomePage() {
   const { user, profile } = useAuth();
   const rootRef = useFadeUpRoot<HTMLDivElement>();
+  const { pairs: featuredPairs } = useFeaturedPairs(4);
 
   return (
     <div ref={rootRef} className="min-h-screen bg-transparent">
@@ -97,6 +99,67 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+
+      {/* Sound & Sight pairs */}
+      {featuredPairs.length > 0 && (
+        <section className="border-b border-white/[0.06] py-10 sm:py-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-6 flex items-end justify-between gap-4">
+              <div>
+                <p className="label-caps mb-1 text-orange-400/80">Paired works</p>
+                <h2 className="text-2xl text-white" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
+                  Sound &amp; Sight
+                </h2>
+                <p className="mt-1 text-xs text-neutral-500">One track, one artwork — linked on purpose.</p>
+              </div>
+              <Link2 className="h-5 w-5 text-neutral-600" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {featuredPairs.map((pair) => (
+                <div
+                  key={pair.id}
+                  className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                >
+                  <Link to={`/content/${pair.music_id}`} className="relative w-1/2 bg-neutral-900">
+                    {(pair.music?.cover_image_url || pair.music?.file_url) ? (
+                      <img
+                        src={pair.music?.cover_image_url || pair.music?.file_url || ''}
+                        alt=""
+                        className="h-36 w-full object-cover sm:h-40"
+                      />
+                    ) : (
+                      <div className="flex h-36 items-center justify-center text-neutral-600 sm:h-40">
+                        <Music className="h-8 w-8" />
+                      </div>
+                    )}
+                    <span className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 backdrop-blur">
+                      Sound
+                    </span>
+                  </Link>
+                  <Link to={`/content/${pair.art_id}`} className="relative w-1/2 bg-neutral-900">
+                    {pair.art?.file_url ? (
+                      <img src={pair.art.file_url} alt="" className="h-36 w-full object-cover sm:h-40" />
+                    ) : (
+                      <div className="flex h-36 items-center justify-center text-neutral-600 sm:h-40">
+                        <Image className="h-8 w-8" />
+                      </div>
+                    )}
+                    <span className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 backdrop-blur">
+                      Sight
+                    </span>
+                  </Link>
+                </div>
+              ))}
+            </div>
+            {featuredPairs[0]?.note && (
+              <p className="mt-4 text-center text-xs italic text-neutral-500">
+                “{featuredPairs[0].note}”
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       <SoundSightChapter />
 

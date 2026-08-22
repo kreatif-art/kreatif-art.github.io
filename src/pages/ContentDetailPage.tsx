@@ -8,6 +8,9 @@ import { ImageLightbox } from '@/components/ImageLightbox';
 import { LoadingState, ErrorState } from '@/components/States';
 import { ContentCard } from '@/components/ContentCard';
 import { TipButton } from '@/components/TipButton';
+import { PairPanel } from '@/components/PairPanel';
+import { PairWithButton } from '@/components/PairWithButton';
+import { usePairsForContent } from '@/hooks/usePairs';
 import { useContent } from '@/hooks/useContent';
 import type { ContentItem, Profile } from '@/types';
 import { formatRelativeTime, formatDuration, formatNumber, getInitials, cn } from '@/lib/utils';
@@ -169,6 +172,8 @@ export function ContentDetailPage() {
       play(item);
     }
   };
+
+  const { pairs, loading: pairsLoading, refetch: refetchPairs } = usePairsForContent(item?.id, item?.type);
 
   if (loading) return <LoadingState className="min-h-screen" />;
   if (error) return <ErrorState message={error} onRetry={() => navigate(-1)} />;
@@ -369,6 +374,10 @@ export function ContentDetailPage() {
         {/* More from other artists */}
         {moreFromArtist.length > 0 && (
           <div className="mt-12">
+            {!pairsLoading && (
+              <PairPanel pairs={pairs} currentType={item.type} onChanged={refetchPairs} className="mb-10" />
+            )}
+
             <h2 className="mb-4 text-lg font-bold text-white">More to explore</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {moreFromArtist.map((m) => (
