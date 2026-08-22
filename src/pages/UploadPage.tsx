@@ -6,15 +6,15 @@ import { useGenres } from '@/hooks/useContent';
 import { LoadingState } from '@/components/States';
 import { ORIGINALITY_ATTESTATION_TEXT, FREE_UPLOADS_PER_MONTH } from '@/types';
 import { checkGenreAlignment } from '@/lib/genreMatch';
-import { Upload as UploadIcon, Music, Image, Loader2, AlertCircle, CheckCircle2, X } from 'lucide-react';
+import {
+  MEDIA,
+  formatBytes,
+  validateMusicFile,
+  validateArtFile,
+  validateCoverFile,
+} from '@/lib/mediaStandards';
+import { Upload as UploadIcon, Music, Image, Loader2, AlertCircle, CheckCircle2, X, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const MAX_AUDIO_SIZE = 15 * 1024 * 1024; // 15MB
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
-const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5MB
-
-const AUDIO_TYPES = ['audio/mpeg', 'audio/mp3'];
-const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function UploadPage() {
   const { user, profile } = useAuth();
@@ -36,6 +36,7 @@ export function UploadPage() {
   const [success, setSuccess] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [mediaMeta, setMediaMeta] = useState<{ durationSec?: number; width?: number; height?: number } | null>(null);
 
   const genres = type === 'music' ? musicGenres : artGenres;
 
@@ -45,51 +46,46 @@ export function UploadPage() {
     }
   }, [profile, navigate]);
 
-  const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
+    setMediaMeta(null);
 
     if (type === 'music') {
-      if (!AUDIO_TYPES.includes(file.type)) {
-        setError('Audio file must be MP3 format.');
+      const check = await validateMusicFile(file);
+      if (!check.ok) {
+        setError(check.error);
+        e.target.value = '';
         return;
       }
-      if (file.size > MAX_AUDIO_SIZE) {
-        setError('Audio file must be under 15MB.');
-        return;
-      }
+      setMediaFile(file);
+      setMediaPreview(null);
+      setMediaMeta({ durationSec: check.durationSec });
     } else {
-      if (!IMAGE_TYPES.includes(file.type)) {
-        setError('Art file must be JPG, PNG, or WebP.');
+      const check = await validateArtFile(file);
+      if (!check.ok) {
+        setError(check.error);
+        e.target.value = '';
         return;
       }
-      if (file.size > MAX_IMAGE_SIZE) {
-        setError('Art file must be under 10MB.');
-        return;
-      }
-    }
-
-    setMediaFile(file);
-    if (type === 'art') {
-      setMediaPreview(URL.createObjectURL(file));
+      setMediaFile(file);
+      setMediaMeta({ width: check.width, height: check.height });
+      const url = URL.createObjectURL(file);
+      setMediaPreview(url);
     }
   };
 
-  const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
-
-    if (!IMAGE_TYPES.includes(file.type)) {
-      setError('Cover image must be JPG, PNG, or WebP.');
+    const check = await validateCoverFile(file);
+    if (!check.ok) {
+      setError(check.error);
+      e.target.value = '';
       return;
     }
-    if (file.size > MAX_COVER_SIZE) {
-      setError('Cover image must be under 5MB.');
-      return;
-    }
-
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
   };
@@ -191,6 +187,7 @@ export function UploadPage() {
           genre_id: genreId,
           file_url: mediaUrlData.publicUrl,
           cover_image_url: coverUrl,
+          duration_sec: type === 'music' ? (mediaMeta?.durationSec ?? null) : null,
           visibility: 'visible',
         })
         .select('id')
@@ -247,7 +244,7 @@ export function UploadPage() {
           <UploadIcon className="h-6 w-6 text-orange-400" />
           Upload your work
         </h1>
-        <p className="mb-6 text-xs text-neutral-500">
+        <p className="mb-4 text-xs text-neutral-500">
           {profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()) ? (
             'Artist Pro — higher upload allowance (no free-tier monthly cap).'
           ) : (
@@ -257,6 +254,38 @@ export function UploadPage() {
             </>
           )}
         </p>
+
+        <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-relaxed text-neutral-400">
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-neutral-200">
+            <Info className="h-4 w-4 text-orange-300/90" />
+            Upload standards
+          </div>
+          {type === 'music' ? (
+            <ul className="list-inside list-disc space-y-1">
+              <li>Format: <span className="text-neutral-300">{MEDIA.music.formatLabel}</span></li>
+              <li>Max size: <span className="text-neutral-300">{formatBytes(MEDIA.music.maxBytes)}</span></li>
+              <li>Length: <span className="text-neutral-300">{MEDIA.music.minDurationSec}s – {MEDIA.music.maxDurationSec / 60} min</span></li>
+              <li>Recommended: <span className="text-neutral-300">{MEDIA.music.recommendedBitrate}</span></li>
+              {MEDIA.music.notes.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
+          ) : (
+            <ul className="list-inside list-disc space-y-1">
+              <li>Format: <span className="text-neutral-300">{MEDIA.art.formatLabel}</span></li>
+              <li>Max file size: <span className="text-neutral-300">{formatBytes(MEDIA.art.maxBytes)}</span></li>
+              <li>Min pixels: <span className="text-neutral-300">{MEDIA.art.minWidth}×{MEDIA.art.minHeight}</span></li>
+              <li>Max pixels: <span className="text-neutral-300">{MEDIA.art.maxWidth}×{MEDIA.art.maxHeight}</span></li>
+              <li>Recommended: <span className="text-neutral-300">{MEDIA.art.recommended}</span></li>
+              {MEDIA.art.notes.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-2 text-neutral-500">
+            Technical checks run in your browser before upload. Genre text is checked for obvious mismatches. Reports + admin can still remove work that violates originality or quality.
+          </p>
+        </div>
 
         {/* Type toggle */}
         <div className="mb-6 flex gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-1">
@@ -299,7 +328,7 @@ export function UploadPage() {
               <div className="flex items-center justify-between rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-3">
                 <div className="flex items-center gap-2">
                   {type === 'music' ? <Music className="h-4 w-4 text-orange-400" /> : <Image className="h-4 w-4 text-pink-400" />}
-                  <span className="truncate text-sm text-neutral-200">{mediaFile.name}</span>
+                  <span className="truncate text-sm text-neutral-200">{mediaFile.name}{mediaMeta?.durationSec != null ? ` · ${mediaMeta.durationSec}s` : ''}{mediaMeta?.width ? ` · ${mediaMeta.width}×${mediaMeta.height}px` : ''}</span>
                 </div>
                 <button type="button" onClick={() => { setMediaFile(null); setMediaPreview(null); }} className="text-neutral-400 hover:text-neutral-200">
                   <X className="h-4 w-4" />

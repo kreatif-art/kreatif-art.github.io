@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Upload, User, ShieldCheck, Music, Image, Eye } from 'lucide-react';
+import { MEDIA, formatBytes } from '@/lib/mediaStandards';
 import { useAuth } from '@/context/AuthContext';
 
 const steps = [
@@ -52,6 +53,29 @@ export function HowToUploadPage() {
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-400">
           Kreatif is for original music and visual art. Five steps from account to published work.
         </p>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+              <Music className="h-4 w-4 text-orange-300/90" /> Music
+            </div>
+            <ul className="space-y-1 text-xs text-neutral-400">
+              <li>{MEDIA.music.formatLabel} · max {formatBytes(MEDIA.music.maxBytes)}</li>
+              <li>{MEDIA.music.minDurationSec}s – {MEDIA.music.maxDurationSec / 60} min</li>
+              <li>{MEDIA.music.recommendedBitrate}</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="mb-2 flex items-center gap-2 text-sm font-medium text-white">
+              <Image className="h-4 w-4 text-orange-300/90" /> Visual art
+            </div>
+            <ul className="space-y-1 text-xs text-neutral-400">
+              <li>{MEDIA.art.formatLabel} · max {formatBytes(MEDIA.art.maxBytes)}</li>
+              <li>Min {MEDIA.art.minWidth}×{MEDIA.art.minHeight}px</li>
+              <li>Max {MEDIA.art.maxWidth}×{MEDIA.art.maxHeight}px</li>
+            </ul>
+          </div>
+        </div>
 
         <ol className="mt-12 space-y-0">
           {steps.map((s, i) => (
