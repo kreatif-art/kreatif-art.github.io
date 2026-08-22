@@ -1,3 +1,23 @@
+# Stripe test go-live checklist (Kreatif)
+
+1. Stripe Dashboard → **Test mode** → copy `sk_test_...`
+2. Supabase → Project Settings → Edge Functions → Secrets:
+   - `STRIPE_SECRET_KEY` = `sk_test_...`
+   - `SITE_URL` = `https://kreatif-art.github.io`
+3. Enable **Connect → Express**
+4. Deploy:
+```bash
+supabase link --project-ref glqtfycyqapvwwbyaxgr
+supabase functions deploy create-checkout
+supabase functions deploy stripe-webhook
+supabase functions deploy connect-onboard
+supabase functions deploy process-payout
+supabase functions deploy connect-status
+```
+5. Webhook endpoint: `https://glqtfycyqapvwwbyaxgr.supabase.co/functions/v1/stripe-webhook`
+   Events: `checkout.session.completed`, `account.updated`
+6. Test: tip with test card `4242…` → balance → Connect → payout ≥ $5
+
 # Stripe test mode (tips + Artist Pro)
 
 ## 1. Stripe Dashboard (test mode)

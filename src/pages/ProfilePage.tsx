@@ -37,8 +37,20 @@ export function ProfilePage() {
   useEffect(() => {
     const c = searchParams.get('connect');
     if (c === 'return') {
-      setPayoutMsg('Stripe onboarding returned — status updates when webhooks are configured. Refresh in a moment.');
-      refreshProfile();
+      (async () => {
+        setPayoutMsg('Checking Stripe Connect status…');
+        const { data, error } = await supabase.functions.invoke('connect-status', { body: {} });
+        if (error || data?.error) {
+          setPayoutMsg('Returned from Stripe. Status will update when Connect webhooks/secrets are live. Refresh shortly.');
+        } else if (data?.payouts_enabled) {
+          setPayoutMsg('Stripe Express ready — you can request payouts.');
+        } else if (data?.details_submitted) {
+          setPayoutMsg('Details submitted — Stripe may still be verifying. Payouts unlock when enabled.');
+        } else {
+          setPayoutMsg('Onboarding incomplete — continue Connect when you can.');
+        }
+        await refreshProfile();
+      })();
     }
     if (c === 'refresh') {
       setPayoutMsg('Onboarding link expired. Start Connect again.');

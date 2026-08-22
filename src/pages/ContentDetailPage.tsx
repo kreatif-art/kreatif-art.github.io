@@ -11,6 +11,7 @@ import { TipButton } from '@/components/TipButton';
 import { PairPanel } from '@/components/PairPanel';
 import { PairWithButton } from '@/components/PairWithButton';
 import { usePairsForContent } from '@/hooks/usePairs';
+import { setShareMeta, resetShareMeta } from '@/lib/shareMeta';
 import { useContent } from '@/hooks/useContent';
 import type { ContentItem, Profile } from '@/types';
 import { formatRelativeTime, formatDuration, formatNumber, getInitials, cn } from '@/lib/utils';
@@ -174,6 +175,17 @@ export function ContentDetailPage() {
   };
 
   const { pairs, loading: pairsLoading, refetch: refetchPairs } = usePairsForContent(item?.id, item?.type);
+  useEffect(() => {
+    if (!item) return;
+    setShareMeta({
+      title: `${item.title} — Kreatif`,
+      description: item.description || `${item.type === 'music' ? 'Original music' : 'Original art'} on Kreatif`,
+      url: `https://kreatif-art.github.io/content/${item.id}`,
+      image: item.type === 'art' ? item.file_url : (item.cover_image_url || item.file_url),
+    });
+    return () => resetShareMeta();
+  }, [item]);
+
 
   if (loading) return <LoadingState className="min-h-screen" />;
   if (error) return <ErrorState message={error} onRetry={() => navigate(-1)} />;

@@ -4,6 +4,7 @@ import { Music, Image, Trophy, Upload, ArrowRight, Heart, Users, Link2 } from 'l
 import { useFadeUpRoot } from '@/hooks/useFadeUp';
 import { DailyShowcase } from '@/components/DailyShowcase';
 import { SoundSightChapter } from '@/components/SoundSightChapter';
+import { PairOfTheDay } from '@/components/PairOfTheDay';
 import { useAuth } from '@/context/AuthContext';
 import { useFeaturedPairs } from '@/hooks/usePairs';
 
@@ -111,6 +112,8 @@ export function HomePage() {
 
 
       <SoundSightChapter />
+
+      <PairOfTheDay />
 
       {/* Sound & Sight pairs */}
       {featuredPairs.length > 0 && (
