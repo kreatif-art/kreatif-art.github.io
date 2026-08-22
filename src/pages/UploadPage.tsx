@@ -40,11 +40,7 @@ export function UploadPage() {
 
   const genres = type === 'music' ? musicGenres : artGenres;
 
-  useEffect(() => {
-    if (!profile?.is_artist) {
-      navigate('/profile');
-    }
-  }, [profile, navigate]);
+  // Non-artists see interstitial below (no silent redirect)
 
   const handleMediaSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -221,7 +217,54 @@ export function UploadPage() {
     }
   };
 
-  if (!profile?.is_artist) return <LoadingState className="min-h-screen" />;
+  if (!user) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <h1 className="text-2xl font-medium text-white">Sign in to upload</h1>
+        <p className="mt-2 max-w-sm text-sm text-neutral-400">
+          Publishing music and art is for artists. Create an account, then turn on artist mode from your profile.
+        </p>
+        <div className="mt-6 flex gap-3">
+          <Link to="/login" className="rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900">
+            Log in
+          </Link>
+          <Link to="/signup" className="rounded-full border border-white/20 px-5 py-2 text-sm text-neutral-200">
+            Sign up
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (profile && !profile.is_artist) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <p className="label-caps mb-2 text-orange-400/80">Artist mode</p>
+        <h1 className="text-2xl font-medium text-white sm:text-3xl">Upload is for artists</h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-400">
+          Fans can browse, like, subscribe, and tip. To publish original music or visual art, enable
+          <span className="text-neutral-200"> Artist mode </span>
+          on your profile. You can turn it off anytime.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link
+            to="/profile"
+            className="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-neutral-900"
+          >
+            Go to profile — enable artist mode
+          </Link>
+          <Link
+            to="/how-to-upload"
+            className="rounded-full border border-white/15 px-5 py-2.5 text-sm text-neutral-300"
+          >
+            How uploading works
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) return <LoadingState className="min-h-screen" />;
 
   if (success) {
     return (

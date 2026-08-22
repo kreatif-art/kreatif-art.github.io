@@ -6,10 +6,12 @@ import { ContentCard } from '@/components/ContentCard';
 import { HorizontalRail } from '@/components/HorizontalRail';
 import { LoadingState, EmptyState, ErrorState } from '@/components/States';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 type SearchScope = 'title' | 'artist';
 
 export function BrowsePage({ type }: { type: 'music' | 'art' }) {
+  const { user, profile } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const genreId = searchParams.get('genre') || null;
   const qParam = searchParams.get('q') || '';
@@ -217,9 +219,19 @@ export function BrowsePage({ type }: { type: 'music' | 'art' }) {
             title={activeSearch ? 'No results' : `No ${isMusic ? 'music' : 'art'} yet`}
             message={emptyMessage}
             action={
-              <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900">
-                Upload
-              </Link>
+              profile?.is_artist ? (
+                <Link to="/upload" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900">
+                  Upload
+                </Link>
+              ) : user ? (
+                <Link to="/profile" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900">
+                  Enable artist mode to upload
+                </Link>
+              ) : (
+                <Link to="/signup" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-neutral-900">
+                  Join to share work
+                </Link>
+              )
             }
           />
         </div>

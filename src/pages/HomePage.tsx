@@ -45,7 +45,7 @@ export function HomePage() {
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2.5">
-                {user ? (
+                {user && profile?.is_artist ? (
                   <Link
                     to="/upload"
                     className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
@@ -53,6 +53,15 @@ export function HomePage() {
                   >
                     <Upload className="h-4 w-4" />
                     Upload work
+                  </Link>
+                ) : user ? (
+                  <Link
+                    to="/profile"
+                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
+                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                  >
+                    Enable artist mode
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : (
                   <Link
