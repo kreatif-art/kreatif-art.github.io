@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home, User } from 'lucide-react';
+import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home, User, ListMusic } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn, getInitials } from '@/lib/utils';
@@ -140,6 +140,13 @@ export function Navbar() {
                     Upload
                   </Link>
                 )}
+                <Link
+                  to="/collections"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                >
+                  <ListMusic className="h-4 w-4" />
+                  Collections
+                </Link>
                 <Link
                   to="/profile"
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"

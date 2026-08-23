@@ -23,6 +23,8 @@ import { TermsPage } from '@/pages/TermsPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
 import { HowToUploadPage } from '@/pages/HowToUploadPage';
 import { PairPage } from '@/pages/PairPage';
+import { CollectionsPage } from '@/pages/CollectionsPage';
+import { CollectionDetailPage } from '@/pages/CollectionDetailPage';
 import { ProPage } from '@/pages/ProPage';
 
 function Layout({ children }: { children: React.ReactNode }) {
@@ -63,6 +65,8 @@ function App() {
                   <Route path="/browse/art" element={<BrowsePage type="art" />} />
                   <Route path="/content/:id" element={<ContentDetailPage />} />
                   <Route path="/pair/:id" element={<PairPage />} />
+                  <Route path="/collections" element={<CollectionsPage />} />
+                  <Route path="/collections/:id" element={<CollectionDetailPage />} />
                   <Route path="/artist/:id" element={<ArtistProfilePage />} />
                   <Route path="/leaderboard" element={<LeaderboardPage />} />
                   <Route path="/search" element={<Navigate to="/browse/music" replace />} />

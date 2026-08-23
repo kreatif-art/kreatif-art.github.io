@@ -18,7 +18,7 @@ const FEATURES = [
   },
   {
     icon: Star,
-    title: 'Featured eligibility',
+    title: 'Unlimited collections · Featured eligibility',
     body: 'Feature up to 3 works at a time (30 days each) on genre reels — labeled, not pay-for-rank on leaderboard.',
   },
   {

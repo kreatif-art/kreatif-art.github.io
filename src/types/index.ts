@@ -130,3 +130,33 @@ export interface ContentPair {
   art?: ContentItem;
   creator?: Profile;
 }
+
+export type PlaylistVisibility = 'private' | 'unlisted' | 'public';
+
+export interface Playlist {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  visibility: PlaylistVisibility;
+  cover_url: string | null;
+  created_at: string;
+  updated_at: string;
+  item_count?: number;
+  profiles?: Profile;
+}
+
+export interface PlaylistItem {
+  id: string;
+  playlist_id: string;
+  content_id: string | null;
+  pair_id: string | null;
+  position: number;
+  added_at: string;
+  content?: ContentItem;
+  pair?: ContentPair;
+}
+
+export const FREE_PLAYLIST_LIMIT = 1;
+export const FREE_PLAYLIST_ITEM_LIMIT = 25;
+export const PRO_PLAYLIST_ITEM_LIMIT = 200;

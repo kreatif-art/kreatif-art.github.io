@@ -8,6 +8,7 @@ import { ImageLightbox } from '@/components/ImageLightbox';
 import { LoadingState, ErrorState } from '@/components/States';
 import { ContentCard } from '@/components/ContentCard';
 import { TipButton } from '@/components/TipButton';
+import { AddToCollectionButton } from '@/components/AddToCollectionButton';
 import { PairPanel } from '@/components/PairPanel';
 import { PairWithButton } from '@/components/PairWithButton';
 import { usePairsForContent } from '@/hooks/usePairs';
@@ -343,6 +344,7 @@ export function ContentDetailPage() {
                 {formatNumber(likeCount)} {likeCount === 1 ? 'Like' : 'Likes'}
               </button>
               {(!user || user.id !== item.user_id) && (
+                <AddToCollectionButton contentId={item.id} />
                 <TipButton artistId={item.user_id} artistName={artist.display_name} contentId={item.id} />
               )}
 

@@ -238,7 +238,16 @@ export function ProfilePage() {
             <h1 className="text-xl font-bold text-white">{profile.display_name}</h1>
             <p className="text-sm text-neutral-500">{profile.email}</p>
             <div className="mt-1 flex flex-wrap justify-center gap-1.5 sm:justify-start">
-              {profile.is_artist && (
+              <div className="mb-6">
+          <Link
+            to="/collections"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm text-neutral-300 hover:border-white/30 hover:text-white"
+          >
+            My collections
+          </Link>
+        </div>
+
+        {profile.is_artist && (
                 <span className="inline-block rounded-full bg-orange-500/20 px-2.5 py-0.5 text-xs font-medium text-orange-400">
                   Artist Mode
                 </span>

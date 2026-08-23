@@ -4,6 +4,7 @@ import { Link2, Music, Image as ImageIcon, Share2, Play } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePlayer } from '@/context/PlayerContext';
 import { setShareMeta, resetShareMeta } from '@/lib/shareMeta';
+import { AddToCollectionButton } from '@/components/AddToCollectionButton';
 import { LoadingState, ErrorState } from '@/components/States';
 import type { ContentPair, ContentItem } from '@/types';
 
@@ -139,6 +140,7 @@ export function PairPage() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
+          <AddToCollectionButton pairId={pair.id} />
           <button
             type="button"
             onClick={share}
