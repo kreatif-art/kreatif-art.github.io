@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Gavel } from 'lucide-react';
 
 /**
  * Intro foyer: full-screen loader with auction gavel motif + percentage.
@@ -59,12 +58,13 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
       }`}
       aria-hidden={leaving}
     >
-      <p className="label-caps mb-6 text-neutral-500">Kreatif</p>
-
-      {/* Auction gavel — foyer emblem (replaces paintbrush) */}
-      <div className="intro-gavel-wrap mb-8" aria-hidden>
-        <Gavel className="intro-gavel h-14 w-14 text-orange-300/90 sm:h-16 sm:w-16" strokeWidth={1.25} />
-        <span className="intro-gavel-strike" />
+      <div className="mb-8 flex flex-col items-center gap-4" aria-hidden>
+        <img
+          src="/logo.png"
+          alt=""
+          className="h-24 w-24 rounded-lg object-cover shadow-[0_0_40px_rgba(255,255,255,0.08)] sm:h-28 sm:w-28"
+        />
+        <p className="label-caps text-neutral-500">Sight &amp; Sound · Estd. 2026</p>
       </div>
 
       <div className="hero-title text-7xl text-white sm:text-8xl md:text-9xl">

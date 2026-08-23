@@ -5,7 +5,8 @@ export function Footer() {
     <footer className="border-t border-neutral-800 bg-neutral-950">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          <Link to="/" className="text-sm font-semibold tracking-tight text-white">
+          <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white">
+            <img src="/logo.png" alt="" className="h-6 w-6 rounded-sm object-cover" />
             Kreatif
           </Link>
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-neutral-400">

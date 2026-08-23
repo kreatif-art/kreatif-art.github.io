@@ -21,7 +21,7 @@ export function setShareMeta(opts: {
   };
 
   const url = opts.url || (typeof window !== 'undefined' ? window.location.href : 'https://kreatif-art.github.io/');
-  const image = opts.image || 'https://kreatif-art.github.io/favicon.svg';
+  const image = opts.image || 'https://kreatif-art.github.io/logo.png';
 
   ensure('name', 'description', opts.description);
   ensure('property', 'og:title', opts.title);
@@ -37,8 +37,8 @@ export function setShareMeta(opts: {
 
 export function resetShareMeta() {
   setShareMeta({
-    title: 'Kreatif — Sound & Sight',
-    description: 'Original music and visual art on one stage. Discover pairs, support makers.',
+    title: 'Kreatif — Sight & Sound',
+    description: 'Sight & Sound. Original music and visual art on one stage. Estd. 2026.',
     url: 'https://kreatif-art.github.io/',
   });
 }

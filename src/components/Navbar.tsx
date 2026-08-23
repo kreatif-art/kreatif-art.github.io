@@ -31,7 +31,8 @@ export function Navbar() {
     <header className="sticky top-0 z-40 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-6">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2.5" title="Kreatif — Sight & Sound">
+            <img src="/logo.png" alt="Kreatif" className="h-8 w-8 rounded-sm object-cover" />
             <span className="text-lg font-semibold tracking-tight text-white">Kreatif</span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
