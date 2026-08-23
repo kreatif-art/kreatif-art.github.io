@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white">
-            <img src="/logo.png" alt="" className="h-6 w-6 rounded-sm object-cover" />
+            <img src="/logo.png?v=3" alt="" className="h-6 w-6 rounded-sm object-cover" />
             Kreatif
           </Link>
           <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-neutral-400">

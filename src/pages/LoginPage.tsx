@@ -29,9 +29,11 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-pink-500">
-            <img src="/logo.png" alt="Kreatif" className="h-12 w-12 rounded-md object-cover" />
-          </div>
+          <img
+            src="/logo.png?v=3"
+            alt="Kreatif"
+            className="h-16 w-16 rounded-2xl object-cover ring-1 ring-white/10"
+          />
           <h1 className="mt-4 text-2xl font-bold text-white">Welcome back</h1>
           <p className="mt-1 text-sm text-neutral-400">Sign in to your Kreatif account</p>
         </div>

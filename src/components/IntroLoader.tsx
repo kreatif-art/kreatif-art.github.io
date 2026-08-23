@@ -60,7 +60,7 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
     >
       <div className="mb-8 flex flex-col items-center gap-4" aria-hidden>
         <img
-          src="/logo.png"
+          src="/logo.png?v=3"
           alt=""
           className="h-24 w-24 rounded-lg object-cover shadow-[0_0_40px_rgba(255,255,255,0.08)] sm:h-28 sm:w-28"
         />
