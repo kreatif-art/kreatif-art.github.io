@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, Mail, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, AlertCircle, Loader2, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export function ForgotPasswordPage() {
@@ -30,7 +30,7 @@ export function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-pink-500">
-            <Music className="h-6 w-6 text-white" />
+            <img src="/logo.png" alt="Kreatif" className="h-12 w-12 rounded-md object-cover" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-white">Reset your password</h1>
           <p className="mt-1 text-sm text-neutral-400">We&apos;ll email you a secure reset link</p>

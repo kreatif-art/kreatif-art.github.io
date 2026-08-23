@@ -64,7 +64,7 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
           alt=""
           className="h-24 w-24 rounded-lg object-cover shadow-[0_0_40px_rgba(255,255,255,0.08)] sm:h-28 sm:w-28"
         />
-        <p className="label-caps text-neutral-500">Sight &amp; Sound · Estd. 2026</p>
+        <p className="label-caps text-neutral-500">Kreatif</p>
       </div>
 
       <div className="hero-title text-7xl text-white sm:text-8xl md:text-9xl">
