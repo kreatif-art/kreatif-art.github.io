@@ -8,10 +8,16 @@ import { PairOfTheDay } from '@/components/PairOfTheDay';
 import { useAuth } from '@/context/AuthContext';
 import { useFeaturedPairs } from '@/hooks/usePairs';
 
+function isImageUrl(url?: string | null) {
+  if (!url) return false;
+  if (/\.(mp3|wav|ogg|m4a|aac)(\?|$)/i.test(url)) return false;
+  return true;
+}
+
 export function HomePage() {
   const { user, profile } = useAuth();
   const rootRef = useFadeUpRoot<HTMLDivElement>();
-  const { pairs: featuredPairs } = useFeaturedPairs(4);
+  const { pairs: featuredPairs } = useFeaturedPairs(8);
 
   return (
     <div ref={rootRef} className="min-h-screen bg-transparent">
@@ -135,28 +141,40 @@ export function HomePage() {
                   key={pair.id}
                   className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
                 >
-                  <Link to={`/content/${pair.music_id}`} className="relative w-1/2 bg-neutral-900">
-                    {(pair.music?.cover_image_url || pair.music?.file_url) ? (
+                  <Link to={`/content/${pair.music_id}`} className="relative w-1/2 overflow-hidden bg-gradient-to-br from-orange-950/90 via-neutral-900 to-neutral-950">
+                    {isImageUrl(pair.music?.cover_image_url) ? (
                       <img
-                        src={pair.music?.cover_image_url || pair.music?.file_url || ''}
+                        src={pair.music!.cover_image_url!}
                         alt=""
                         className="h-36 w-full object-cover sm:h-40"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
                       />
                     ) : (
-                      <div className="flex h-36 items-center justify-center text-neutral-600 sm:h-40">
-                        <Music className="h-8 w-8" />
+                      <div className="flex h-36 flex-col items-center justify-center gap-1 px-2 sm:h-40">
+                        <Music className="h-8 w-8 text-orange-300/60" />
+                        <span className="line-clamp-2 text-center text-[10px] text-neutral-500">{pair.music?.title}</span>
                       </div>
                     )}
                     <span className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 backdrop-blur">
                       Sound
                     </span>
                   </Link>
-                  <Link to={`/content/${pair.art_id}`} className="relative w-1/2 bg-neutral-900">
-                    {pair.art?.file_url ? (
-                      <img src={pair.art.file_url} alt="" className="h-36 w-full object-cover sm:h-40" />
+                  <Link to={`/content/${pair.art_id}`} className="relative w-1/2 overflow-hidden bg-gradient-to-br from-pink-950/90 via-neutral-900 to-neutral-950">
+                    {isImageUrl(pair.art?.file_url) ? (
+                      <img
+                        src={pair.art!.file_url!}
+                        alt=""
+                        className="h-36 w-full object-cover sm:h-40"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
                     ) : (
-                      <div className="flex h-36 items-center justify-center text-neutral-600 sm:h-40">
-                        <Image className="h-8 w-8" />
+                      <div className="flex h-36 flex-col items-center justify-center gap-1 px-2 sm:h-40">
+                        <Image className="h-8 w-8 text-pink-300/60" />
+                        <span className="line-clamp-2 text-center text-[10px] text-neutral-500">{pair.art?.title}</span>
                       </div>
                     )}
                     <span className="absolute left-2 top-2 rounded-full bg-black/50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-white/90 backdrop-blur">

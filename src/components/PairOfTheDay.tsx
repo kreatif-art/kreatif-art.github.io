@@ -50,7 +50,7 @@ export function PairOfTheDay() {
 
   if (loading || !pair?.music || !pair?.art) return null;
 
-  const musicCover = pair.music.cover_image_url || pair.music.file_url;
+  const musicCover = pair.music.cover_image_url && !/\.(mp3|wav|ogg|m4a)(\?|$)/i.test(pair.music.cover_image_url) ? pair.music.cover_image_url : null;
   const artCover = pair.art.file_url;
 
   return (
