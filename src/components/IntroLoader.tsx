@@ -1,3 +1,4 @@
+import { BrandLogo } from '@/components/BrandLogo';
 import { useEffect, useState } from 'react';
 
 /**
@@ -59,11 +60,7 @@ export function IntroLoader({ onDone }: { onDone?: () => void }) {
       aria-hidden={leaving}
     >
       <div className="mb-8 flex flex-col items-center gap-4" aria-hidden>
-        <img
-          src="/logo.png?v=3"
-          alt=""
-          className="h-24 w-24 rounded-lg object-cover shadow-[0_0_40px_rgba(255,255,255,0.08)] sm:h-28 sm:w-28"
-        />
+        <BrandLogo className="h-24 w-24 rounded-lg shadow-[0_0_40px_rgba(255,255,255,0.08)] sm:h-28 sm:w-28" alt="" />
         <p className="label-caps text-neutral-500">Kreatif</p>
       </div>
 

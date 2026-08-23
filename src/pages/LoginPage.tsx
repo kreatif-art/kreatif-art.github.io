@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export function LoginPage() {
   const { signIn } = useAuth();
@@ -29,11 +30,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center">
-          <img
-            src="/logo.png?v=3"
-            alt="Kreatif"
-            className="h-16 w-16 rounded-2xl object-cover ring-1 ring-white/10"
-          />
+          <BrandLogo className="h-16 w-16 rounded-2xl ring-1 ring-white/10" />
           <h1 className="mt-4 text-2xl font-bold text-white">Welcome back</h1>
           <p className="mt-1 text-sm text-neutral-400">Sign in to your Kreatif account</p>
         </div>

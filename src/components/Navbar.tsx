@@ -4,6 +4,7 @@ import { Music, Image, Trophy, Upload, LogOut, Menu, X, Home, User, ListMusic } 
 import { useAuth } from '@/context/AuthContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { cn, getInitials } from '@/lib/utils';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export function Navbar() {
   const { user, profile, signOut } = useAuth();
@@ -32,7 +33,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2.5" title="Kreatif — Sight & Sound">
-            <img src="/logo.png?v=3" alt="Kreatif" className="h-8 w-8 rounded-sm object-cover" />
+            <BrandLogo className="h-8 w-8 rounded-sm" />
             <span className="text-lg font-semibold tracking-tight text-white">Kreatif</span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
