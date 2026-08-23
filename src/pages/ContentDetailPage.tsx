@@ -343,8 +343,8 @@ export function ContentDetailPage() {
                 <Heart className={cn('h-4 w-4', isLiked && 'fill-current')} />
                 {formatNumber(likeCount)} {likeCount === 1 ? 'Like' : 'Likes'}
               </button>
+              <AddToCollectionButton contentId={item.id} />
               {(!user || user.id !== item.user_id) && (
-                <AddToCollectionButton contentId={item.id} />
                 <TipButton artistId={item.user_id} artistName={artist.display_name} contentId={item.id} />
               )}
 
