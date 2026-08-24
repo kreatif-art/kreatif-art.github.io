@@ -44,7 +44,7 @@ export function CollectionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-3xl px-4 py-10 pb-28 sm:px-6 sm:py-14 sm:pb-14">
       <p className="label-caps mb-1 text-orange-400/80">Your library</p>
       <h1
         className="text-3xl text-white sm:text-4xl"
@@ -62,18 +62,22 @@ export function CollectionsPage() {
         )}
       </p>
 
-      <form onSubmit={onCreate} className="mt-8 flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      {/* Create form — sticky on mobile so it never sits under the bottom nav */}
+      <form
+        onSubmit={onCreate}
+        className="sticky top-0 z-10 mt-8 flex flex-wrap gap-2 rounded-2xl border border-white/10 bg-neutral-950/95 p-4 shadow-lg backdrop-blur-md sm:static sm:bg-white/[0.03] sm:shadow-none sm:backdrop-blur-none"
+      >
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="New collection title"
-          className="min-w-[12rem] flex-1 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-white"
+          className="min-w-[12rem] flex-1 rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2.5 text-sm text-white"
           maxLength={120}
         />
         <select
           value={visibility}
           onChange={(e) => setVisibility(e.target.value as PlaylistVisibility)}
-          className="rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-300"
+          className="rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2.5 text-sm text-neutral-300"
         >
           <option value="private">Private</option>
           <option value="unlisted">Unlisted</option>
@@ -82,7 +86,7 @@ export function CollectionsPage() {
         <button
           type="submit"
           disabled={busy || !title.trim() || (!isPro && playlists.length >= 1)}
-          className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-neutral-900 disabled:opacity-40"
+          className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-neutral-900 disabled:opacity-40"
         >
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           Create

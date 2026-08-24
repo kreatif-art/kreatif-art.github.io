@@ -19,7 +19,7 @@ export function AddToCollectionButton({ contentId, pairId, className }: Props) {
   const [msg, setMsg] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
 
-  // Lock body scroll when sheet open (mobile)
+  // Lock body scroll when sheet open
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -96,7 +96,7 @@ export function AddToCollectionButton({ contentId, pairId, className }: Props) {
 
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-label="Save to collection"
@@ -109,13 +109,25 @@ export function AddToCollectionButton({ contentId, pairId, className }: Props) {
             onClick={() => setOpen(false)}
           />
 
-          {/* Centered sheet — works on mobile & desktop */}
+          {/*
+            Mobile: bottom sheet sitting above the tab bar + home indicator.
+            Desktop: centered card.
+          */}
           <div
-            className="relative z-[101] flex max-h-[min(85dvh,32rem)] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-white/10 bg-neutral-950 shadow-2xl"
-            style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
+            className={cn(
+              'relative z-[101] flex w-full max-w-md flex-col overflow-hidden border border-white/10 bg-neutral-950 shadow-2xl',
+              'rounded-t-2xl sm:rounded-2xl',
+              /* Clear mobile bottom nav + safe area */
+              'mb-[calc(var(--mobile-nav-h)+var(--safe-bottom))] sm:mb-0',
+              /* Height: leave room for nav on mobile; centered card on desktop */
+              'max-h-[min(78dvh,calc(100dvh-var(--mobile-nav-h)-var(--safe-bottom)-1rem))]',
+              'sm:max-h-[min(85dvh,32rem)]',
+            )}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-5 py-4">
+            <div className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-white/15 sm:hidden" aria-hidden />
+
+            <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-5 py-3 sm:py-4">
               <h3 className="text-lg font-medium text-white">Save to collection</h3>
               <button
                 type="button"
@@ -126,7 +138,7 @@ export function AddToCollectionButton({ contentId, pairId, className }: Props) {
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
               <p className="mb-3 text-xs text-neutral-500">
                 Free: 1 collection (25 items). Pro: unlimited.
                 {!isPro && playlists.length >= 1 && (
@@ -166,8 +178,9 @@ export function AddToCollectionButton({ contentId, pairId, className }: Props) {
               )}
             </div>
 
+            {/* Create form pinned at bottom of sheet — always visible above nav */}
             {canCreate && (
-              <div className="shrink-0 border-t border-white/10 px-5 py-4">
+              <div className="shrink-0 border-t border-white/10 bg-neutral-950 px-5 py-4">
                 <p className="mb-2 text-[10px] uppercase tracking-wider text-neutral-600">New collection</p>
                 <div className="flex gap-2">
                   <input

@@ -75,7 +75,7 @@ export function CollectionDetailPage() {
   if (error || !playlist) return <ErrorState message={error || 'Not found'} />;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
+    <div className="mx-auto max-w-3xl px-4 py-10 pb-28 sm:px-6 sm:py-14 sm:pb-14">
       <Link to="/collections" className="mb-6 inline-flex items-center gap-2 text-xs text-neutral-500 hover:text-neutral-300">
         <ArrowLeft className="h-3.5 w-3.5" /> Collections
       </Link>
