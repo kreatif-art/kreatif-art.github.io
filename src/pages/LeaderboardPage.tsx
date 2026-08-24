@@ -68,7 +68,7 @@ export function LeaderboardPage() {
       .select('*')
       .in('id', userIds);
 
-    // Build and sort entries
+    // Rank only artists who have received at least one like (true Top 10)
     const leaderboard: LeaderEntry[] = (profilesData || [])
       .map((p) => {
         const stats = userStats.get((p as Profile).id);
@@ -78,7 +78,11 @@ export function LeaderboardPage() {
           contentCount: stats?.contentCount || 0,
         };
       })
-      .sort((a, b) => b.totalLikes - a.totalLikes)
+      .filter((e) => e.totalLikes > 0)
+      .sort((a, b) => {
+        if (b.totalLikes !== a.totalLikes) return b.totalLikes - a.totalLikes;
+        return b.contentCount - a.contentCount;
+      })
       .slice(0, 10);
 
     setEntries(leaderboard);
