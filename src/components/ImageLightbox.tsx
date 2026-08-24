@@ -1,7 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    const stage = stageRef.current;
+    if (!root || !stage) return;
+
+    const apply = () => {
+      const vv = window.visualViewport;
+      const h = vv?.height ?? window.innerHeight;
+      const offsetTop = vv?.offsetTop ?? 0;
+
+      let safeTop = 0;
+      let safeBottom = 0;
+      try {
+        const cs = getComputedStyle(document.documentElement);
+        safeTop = parseFloat(cs.getPropertyValue('--safe-top')) || 0;
+        safeBottom = parseFloat(cs.getPropertyValue('--safe-bottom')) || 0;
+      } catch {
+        /* ignore */
+      }
+
+      root.style.position = 'fixed';
+      root.style.top = `${offsetTop}px`;
+      root.style.left = '0';
+      root.style.right = '0';
+      root.style.bottom = 'auto';
+      root.style.height = `${h}px`;
+      root.style.width = '100%';
+      root.style.zIndex = '60';
+
+      stage.style.position = 'absolute';
+      stage.style.top = `${safeTop + 48}px`;
+      stage.style.bottom = `${safeBottom + 12}px`;
+      stage.style.left = '0';
+      stage.style.right = '0';
+    };
+
+    apply();
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', apply);
+    vv?.addEventListener('scroll', apply);
+    window.addEventListener('resize', apply);
+    return () => {
+      vv?.removeEventListener('resize', apply);
+      vv?.removeEventListener('scroll', apply);
+      window.removeEventListener('resize', apply);
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -17,8 +68,8 @@ export function ImageLightbox({ src, alt, onClose }: { src: string; alt: string;
 
   return (
     <div
-      className="fixed inset-0 z-[60] bg-black"
-      style={{ height: '100dvh', width: '100vw', maxHeight: '100dvh' }}
+      ref={rootRef}
+      className="bg-black"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -28,18 +79,16 @@ export function ImageLightbox({ src, alt, onClose }: { src: string; alt: string;
         type="button"
         onClick={onClose}
         className="absolute right-3 z-10 rounded-full bg-white/15 p-2 text-neutral-100 backdrop-blur-sm hover:bg-white/25"
-        style={{ top: 'max(0.75rem, var(--safe-top))' }}
+        style={{ top: 'max(0.75rem, var(--safe-top, 0px))' }}
         aria-label="Close"
       >
         <X className="h-5 w-5" />
       </button>
 
       <div
-        className="absolute inset-x-0 flex items-center justify-center"
-        style={{
-          top: 'calc(var(--safe-top) + 3rem)',
-          bottom: 'calc(var(--safe-bottom) + 0.75rem)',
-        }}
+        ref={stageRef}
+        className="overflow-hidden"
+        style={{ display: 'grid', placeItems: 'center' }}
         onClick={(e) => e.stopPropagation()}
       >
         <img
@@ -47,12 +96,13 @@ export function ImageLightbox({ src, alt, onClose }: { src: string; alt: string;
           alt={alt}
           className="select-none"
           style={{
-            width: 'auto',
-            height: 'auto',
             maxWidth: '100%',
             maxHeight: '100%',
+            width: 'auto',
+            height: 'auto',
             objectFit: 'contain',
             display: 'block',
+            margin: 0,
           }}
           draggable={false}
         />

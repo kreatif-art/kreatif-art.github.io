@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Pause, Play, X } from 'lucide-react';
 import type { ContentItem } from '@/types';
 
 const INTERVAL_MS = 3000;
+const TOP_CHROME_PX = 52;
+const BOTTOM_CHROME_PX = 28;
 
 type ArtGalleryProps = {
   pieces: ContentItem[];
@@ -16,6 +18,8 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
   );
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -36,6 +40,59 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
 
   const next = useCallback(() => go(1), [go]);
   const prev = useCallback(() => go(-1), [go]);
+
+  // Lock foyer to the visible viewport (fixes Android Chrome pinning image to bottom)
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    const stage = stageRef.current;
+    if (!root || !stage) return;
+
+    const apply = () => {
+      const vv = window.visualViewport;
+      const h = vv?.height ?? window.innerHeight;
+      const offsetTop = vv?.offsetTop ?? 0;
+
+      let safeTop = 0;
+      let safeBottom = 0;
+      try {
+        const cs = getComputedStyle(document.documentElement);
+        safeTop = parseFloat(cs.getPropertyValue('--safe-top')) || 0;
+        safeBottom = parseFloat(cs.getPropertyValue('--safe-bottom')) || 0;
+      } catch {
+        /* ignore */
+      }
+
+      root.style.position = 'fixed';
+      root.style.top = `${offsetTop}px`;
+      root.style.left = '0';
+      root.style.right = '0';
+      root.style.bottom = 'auto';
+      root.style.height = `${h}px`;
+      root.style.width = '100%';
+      root.style.zIndex = '70';
+
+      const topPad = safeTop + TOP_CHROME_PX;
+      const bottomPad = safeBottom + BOTTOM_CHROME_PX;
+      stage.style.position = 'absolute';
+      stage.style.top = `${topPad}px`;
+      stage.style.bottom = `${bottomPad}px`;
+      stage.style.left = '0';
+      stage.style.right = '0';
+    };
+
+    apply();
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', apply);
+    vv?.addEventListener('scroll', apply);
+    window.addEventListener('resize', apply);
+    window.addEventListener('orientationchange', apply);
+    return () => {
+      vv?.removeEventListener('resize', apply);
+      vv?.removeEventListener('scroll', apply);
+      window.removeEventListener('resize', apply);
+      window.removeEventListener('orientationchange', apply);
+    };
+  }, []);
 
   useEffect(() => {
     if (paused || len <= 1) {
@@ -118,54 +175,40 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
 
   return (
     <div
-      className="art-foyer fixed inset-0 z-[70] bg-black"
+      ref={rootRef}
+      className="art-foyer bg-black"
       role="dialog"
       aria-modal="true"
       aria-label="Art gallery"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
-      style={{
-        /* iOS: use dynamic viewport so fixed layer matches visible screen */
-        height: '100dvh',
-        width: '100vw',
-        maxHeight: '100dvh',
-      }}
     >
-      {/*
-        Image stage sits BETWEEN top chrome and bottom counter.
-        That removes the large black band under the title (letterbox + chrome stacking).
-      */}
       <div
-        className="absolute inset-x-0 flex items-center justify-center overflow-hidden"
-        style={{
-          top: 'calc(var(--safe-top) + 3.25rem)',
-          bottom: 'calc(var(--safe-bottom) + 1.75rem)',
-        }}
+        ref={stageRef}
+        className="overflow-hidden"
         onClick={next}
         role="presentation"
+        style={{ display: 'grid', placeItems: 'center' }}
       >
         <img
           key={current.id}
           src={current.file_url}
           alt={current.title}
-          className="gallery-fade max-h-full max-w-full select-none"
+          className="gallery-fade select-none"
           style={{
-            width: 'auto',
-            height: 'auto',
             maxWidth: '100%',
             maxHeight: '100%',
+            width: 'auto',
+            height: 'auto',
             objectFit: 'contain',
             display: 'block',
+            margin: 0,
           }}
           draggable={false}
         />
       </div>
 
-      {/* Top chrome */}
-      <div
-        className="absolute inset-x-0 top-0 z-20"
-        style={{ paddingTop: 'var(--safe-top)' }}
-      >
+      <div className="absolute inset-x-0 top-0 z-20" style={{ paddingTop: 'var(--safe-top, 0px)' }}>
         {len > 1 && (
           <div className="flex gap-1 px-3 pt-1.5">
             {pieces.map((_, i) => (
@@ -204,7 +247,6 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
         </div>
       </div>
 
-      {/* Desktop arrows */}
       {len > 1 && (
         <>
           <button
@@ -232,10 +274,9 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
         </>
       )}
 
-      {/* Bottom counter */}
       <div
         className="absolute inset-x-0 bottom-0 z-20 px-3 text-center"
-        style={{ paddingBottom: 'max(0.4rem, var(--safe-bottom))' }}
+        style={{ paddingBottom: 'max(0.4rem, var(--safe-bottom, 0px))' }}
       >
         <p className="text-[10px] text-neutral-400">
           {index + 1} / {len}
