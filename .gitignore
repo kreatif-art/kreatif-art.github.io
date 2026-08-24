@@ -26,7 +26,6 @@ dist-ssr
 supabase/.temp
 supabase/.branches
 
-# Built assets (deployed separately)
-/assets/
+# Vite build output (source of truth stays in src/)
+# /assets is published to the branch root for legacy GitHub Pages
 /docs/
-/404.html
