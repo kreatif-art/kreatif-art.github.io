@@ -15,6 +15,8 @@ import {
 } from '@/lib/mediaStandards';
 import { Upload as UploadIcon, Music, Image, Loader2, AlertCircle, CheckCircle2, X, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { sha256File } from '@/lib/fileHash';
+import { DisputeForm } from '@/components/DisputeForm';
 
 export function UploadPage() {
   const { user, profile } = useAuth();
@@ -33,6 +35,14 @@ export function UploadPage() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [genreWarning, setGenreWarning] = useState<string | null>(null);
+  const [dupMatch, setDupMatch] = useState<{
+    id: string;
+    title: string;
+    type: string;
+    artist_name: string;
+  } | null>(null);
+  const [fingerprint, setFingerprint] = useState<string | null>(null);
+
   const [success, setSuccess] = useState(false);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
@@ -141,8 +151,29 @@ export function UploadPage() {
 
     setUploading(true);
     setProgress(0);
+    setDupMatch(null);
 
     try {
+      setProgress(5);
+      const fp = await sha256File(mediaFile);
+      setFingerprint(fp);
+      const { data: existingRows, error: fpErr } = await supabase.rpc('find_content_by_fingerprint', {
+        p_fingerprint: fp,
+      });
+      if (fpErr) console.warn(fpErr);
+      const existing = Array.isArray(existingRows) ? existingRows[0] : existingRows;
+      if (existing?.id) {
+        setDupMatch({
+          id: existing.id,
+          title: existing.title,
+          type: existing.type,
+          artist_name: existing.artist_name,
+        });
+        setError('This file is already on Kreatif. You cannot upload a duplicate.');
+        setUploading(false);
+        return;
+      }
+
       // Upload media file
       const mediaExt = mediaFile.name.split('.').pop();
       const mediaPath = `${user.id}/${type}-${Date.now()}.${mediaExt}`;
@@ -184,6 +215,8 @@ export function UploadPage() {
           file_url: mediaUrlData.publicUrl,
           cover_image_url: coverUrl,
           duration_sec: type === 'music' ? (mediaMeta?.durationSec ?? null) : null,
+          content_fingerprint: fp,
+          file_size_bytes: mediaFile.size,
           visibility: 'visible',
         })
         .select('id')
@@ -360,6 +393,9 @@ export function UploadPage() {
             <div className="flex items-center gap-2 rounded-lg border border-red-900/50 bg-red-950/20 px-4 py-3 text-sm text-red-300">
               <AlertCircle className="h-4 w-4 shrink-0" /> {error}
             </div>
+          )}
+          {dupMatch && fingerprint && (
+            <DisputeForm fingerprint={fingerprint} existing={dupMatch} />
           )}
 
           {/* Media file */}

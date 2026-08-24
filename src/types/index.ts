@@ -51,6 +51,8 @@ export interface ContentItem {
   file_url: string;
   cover_image_url: string | null;
   duration_sec: number | null;
+  content_fingerprint?: string | null;
+  file_size_bytes?: number | null;
   visibility: 'visible' | 'hidden';
   created_at: string;
   updated_at: string;
