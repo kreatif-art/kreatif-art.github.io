@@ -1,3 +1,4 @@
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useState, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -33,6 +34,8 @@ export function ProfilePage() {
 
 
   const isProActive = !!(profile?.is_pro && (!profile.pro_until || new Date(profile.pro_until) > new Date()));
+  const push = usePushNotifications();
+
 
   useEffect(() => {
     const c = searchParams.get('connect');
@@ -245,6 +248,17 @@ export function ProfilePage() {
           >
             My collections
           </Link>
+          {push.supported && (
+            <button
+              type="button"
+              disabled={push.busy}
+              onClick={() => push.enable()}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm text-neutral-300 hover:border-white/30 hover:text-white disabled:opacity-50"
+            >
+              {push.permission === 'granted' ? 'Notifications on' : 'Enable notifications'}
+            </button>
+          )}
+          {push.message && <p className="mt-2 w-full text-xs text-neutral-500">{push.message}</p>}
         </div>
 
         {profile.is_artist && (

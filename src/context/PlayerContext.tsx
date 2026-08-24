@@ -235,6 +235,105 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setDuration(0);
   }, []);
 
+
+  // Lock screen / OS media controls (mobile + desktop)
+  useEffect(() => {
+    if (!('mediaSession' in navigator) || !currentTrack) return;
+    const cover =
+      currentTrack.type === 'art'
+        ? currentTrack.file_url
+        : currentTrack.cover_image_url || undefined;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentTrack.title,
+        artist: currentTrack.profiles?.display_name || 'Kreatif',
+        album: 'Kreatif',
+        artwork: cover
+          ? [
+              { src: cover, sizes: '512x512', type: 'image/jpeg' },
+              { src: cover, sizes: '256x256', type: 'image/jpeg' },
+            ]
+          : [],
+      });
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    } catch {
+      /* MediaMetadata unsupported variants */
+    }
+
+    const audio = audioRef.current;
+    const safe = (fn: () => void) => {
+      try {
+        fn();
+      } catch {
+        /* ignore */
+      }
+    };
+
+    navigator.mediaSession.setActionHandler('play', () => {
+      safe(() => {
+        void audio?.play();
+      });
+    });
+    navigator.mediaSession.setActionHandler('pause', () => {
+      safe(() => audio?.pause());
+    });
+    navigator.mediaSession.setActionHandler('stop', () => {
+      safe(() => {
+        if (audio) {
+          audio.pause();
+          audio.src = '';
+        }
+        setCurrentTrack(null);
+        setIsPlaying(false);
+      });
+    });
+    navigator.mediaSession.setActionHandler('seekto', (details) => {
+      if (details.seekTime != null && audio) {
+        audio.currentTime = details.seekTime;
+        setCurrentTime(details.seekTime);
+      }
+    });
+    navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+      if (!audio) return;
+      const off = details.seekOffset ?? 10;
+      audio.currentTime = Math.max(0, audio.currentTime - off);
+    });
+    navigator.mediaSession.setActionHandler('seekforward', (details) => {
+      if (!audio) return;
+      const off = details.seekOffset ?? 10;
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + off);
+    });
+
+    return () => {
+      try {
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+        navigator.mediaSession.setActionHandler('stop', null);
+        navigator.mediaSession.setActionHandler('seekto', null);
+        navigator.mediaSession.setActionHandler('seekbackward', null);
+        navigator.mediaSession.setActionHandler('seekforward', null);
+      } catch {
+        /* ignore */
+      }
+    };
+  }, [currentTrack, isPlaying]);
+
+  // Keep position state in sync for scrubbers on lock screen
+  useEffect(() => {
+    if (!('mediaSession' in navigator) || !currentTrack) return;
+    try {
+      if (duration > 0 && Number.isFinite(currentTime)) {
+        navigator.mediaSession.setPositionState({
+          duration,
+          position: Math.min(currentTime, duration),
+          playbackRate: 1,
+        });
+      }
+    } catch {
+      /* setPositionState not supported */
+    }
+  }, [currentTrack, currentTime, duration]);
+
   return (
     <PlayerContext.Provider
       value={{

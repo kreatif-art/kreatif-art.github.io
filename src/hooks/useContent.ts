@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ContentItem, Genre } from '@/types';
+import { loadOfflineCatalog, saveOfflineCatalog } from '@/lib/offlineCache';
 import { PAGE_SIZE } from '@/types';
 
 export function useGenres(type?: 'music' | 'art') {
@@ -75,6 +76,17 @@ export function useContent({
       const { data, error: queryError, count } = await query;
 
       if (queryError) {
+        // Offline / network: fall back to last cached catalog slice
+        const offline = loadOfflineCatalog();
+        const fallback =
+          type === 'art' ? offline?.art : type === 'music' ? offline?.music : [...(offline?.music || []), ...(offline?.art || [])];
+        if (fallback && fallback.length) {
+          setItems(fallback as ContentItem[]);
+          setError('Showing offline catalog — reconnect for the latest.');
+          setHasMore(false);
+          setLoading(false);
+          return;
+        }
         setError(queryError.message);
         setLoading(false);
         return;
@@ -103,6 +115,12 @@ export function useContent({
 
       setHasMore(contentItems.length === pageSize);
       setItems((prev) => (replace ? contentItems : [...prev, ...contentItems]));
+      if (replace && contentItems.length && type === 'music') {
+        saveOfflineCatalog({ music: contentItems });
+      }
+      if (replace && contentItems.length && type === 'art') {
+        saveOfflineCatalog({ art: contentItems });
+      }
       setLoading(false);
     },
     [type, genreId, search, searchScope, userId, pageSize],

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { ContentPair, ContentItem } from '@/types';
+import { saveOfflineCatalog } from '@/lib/offlineCache';
 
 const CONTENT_SELECT =
   'id, user_id, type, title, description, genre_id, file_url, cover_image_url, duration_sec, visibility, is_featured, created_at, profiles!inner(id, display_name, avatar_url, is_artist, is_pro), genre:genres(id, name, type)';
@@ -66,6 +67,7 @@ export function usePairsForContent(contentId: string | undefined, type: 'music' 
           unique.push(p);
         }
         setPairs(unique);
+        if (unique.length) saveOfflineCatalog({ pairs: unique });
     }
     setLoading(false);
   }, [contentId, type]);
@@ -112,6 +114,7 @@ export function useFeaturedPairs(limit = 6) {
           unique.push(p);
         }
         setPairs(unique);
+        if (unique.length) saveOfflineCatalog({ pairs: unique });
       }
       setLoading(false);
     })();
