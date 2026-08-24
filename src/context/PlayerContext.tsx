@@ -29,11 +29,21 @@ interface PlayerContextValue {
   currentTime: number;
   duration: number;
   volume: number;
+  /** Active queue (e.g. collection). Empty when playing a single track. */
+  queue: ContentItem[];
+  queueIndex: number;
+  /** When true, end of queue restarts at first track */
+  loopQueue: boolean;
   play: (track: ContentItem) => void;
+  /** Play a list (collection); loops by default */
+  playQueue: (tracks: ContentItem[], startIndex?: number, loop?: boolean) => void;
+  playNext: () => void;
+  playPrev: () => void;
   togglePlay: () => void;
   seek: (time: number) => void;
   setVolume: (vol: number) => void;
   stop: () => void;
+  setLoopQueue: (loop: boolean) => void;
   /**
    * Read latest analyser data. Safe to call every animation frame while playing.
    * Returns null if graph not ready or no track.
@@ -71,6 +81,24 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(0.8);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
+  const [queue, setQueue] = useState<ContentItem[]>([]);
+  const [queueIndex, setQueueIndex] = useState(-1);
+  const [loopQueue, setLoopQueue] = useState(true);
+
+  const queueRef = useRef<ContentItem[]>([]);
+  const queueIndexRef = useRef(-1);
+  const loopQueueRef = useRef(true);
+  const playTrackRef = useRef<(track: ContentItem, opts?: { fromQueue?: boolean }) => Promise<void>>(async () => {});
+
+  useEffect(() => {
+    queueRef.current = queue;
+  }, [queue]);
+  useEffect(() => {
+    queueIndexRef.current = queueIndex;
+  }, [queueIndex]);
+  useEffect(() => {
+    loopQueueRef.current = loopQueue;
+  }, [loopQueue]);
 
   const ensureGraph = useCallback(async () => {
     const audio = audioRef.current;
@@ -130,7 +158,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const onDurationChange = () => setDuration(audio.duration || 0);
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
-    const onEnded = () => setIsPlaying(false);
+    const onEnded = () => {
+      setIsPlaying(false);
+      const q = queueRef.current;
+      const idx = queueIndexRef.current;
+      if (q.length === 0 || idx < 0) return;
+      let next = idx + 1;
+      if (next >= q.length) {
+        if (loopQueueRef.current) next = 0;
+        else return;
+      }
+      const track = q[next];
+      if (track) {
+        setQueueIndex(next);
+        queueIndexRef.current = next;
+        void playTrackRef.current(track, { fromQueue: true });
+      }
+    };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('durationchange', onDurationChange);
@@ -174,18 +218,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const play = useCallback(
-    async (track: ContentItem) => {
+  const playTrackInternal = useCallback(
+    async (track: ContentItem, opts?: { fromQueue?: boolean }) => {
       const audio = audioRef.current;
       if (!audio) return;
-
       await ensureGraph();
-
-      if (currentTrack?.id === track.id) {
-        if (audio.paused) {
-          await audio.play().catch((err) => console.error('Playback failed:', err));
-        }
-        return;
+      if (!opts?.fromQueue) {
+        // Single-track play clears queue unless same id mid-queue
+        setQueue([]);
+        queueRef.current = [];
+        setQueueIndex(-1);
+        queueIndexRef.current = -1;
       }
       setCurrentTrack(track);
       audio.src = track.file_url;
@@ -195,8 +238,84 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         console.error('Playback failed:', err);
       }
     },
-    [currentTrack, ensureGraph],
+    [ensureGraph],
   );
+
+  useEffect(() => {
+    playTrackRef.current = playTrackInternal;
+  }, [playTrackInternal]);
+
+  const play = useCallback(
+    async (track: ContentItem) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      await ensureGraph();
+      if (currentTrack?.id === track.id) {
+        if (audio.paused) {
+          await audio.play().catch((err) => console.error('Playback failed:', err));
+        }
+        return;
+      }
+      await playTrackInternal(track, { fromQueue: false });
+    },
+    [currentTrack, ensureGraph, playTrackInternal],
+  );
+
+  const playQueue = useCallback(
+    async (tracks: ContentItem[], startIndex = 0, loop = true) => {
+      const music = tracks.filter((t) => t.type === 'music' && t.file_url);
+      if (!music.length) return;
+      const idx = Math.max(0, Math.min(startIndex, music.length - 1));
+      setQueue(music);
+      queueRef.current = music;
+      setQueueIndex(idx);
+      queueIndexRef.current = idx;
+      setLoopQueue(loop);
+      loopQueueRef.current = loop;
+      await playTrackInternal(music[idx], { fromQueue: true });
+    },
+    [playTrackInternal],
+  );
+
+  const playNext = useCallback(async () => {
+    const q = queueRef.current;
+    const idx = queueIndexRef.current;
+    if (!q.length) return;
+    let next = idx + 1;
+    if (next >= q.length) {
+      if (!loopQueueRef.current) return;
+      next = 0;
+    }
+    setQueueIndex(next);
+    queueIndexRef.current = next;
+    await playTrackInternal(q[next], { fromQueue: true });
+  }, [playTrackInternal]);
+
+  const playPrev = useCallback(async () => {
+    const audio = audioRef.current;
+    const q = queueRef.current;
+    const idx = queueIndexRef.current;
+    if (audio && audio.currentTime > 3) {
+      audio.currentTime = 0;
+      setCurrentTime(0);
+      return;
+    }
+    if (!q.length) return;
+    let prev = idx - 1;
+    if (prev < 0) {
+      if (!loopQueueRef.current) {
+        if (audio) {
+          audio.currentTime = 0;
+          setCurrentTime(0);
+        }
+        return;
+      }
+      prev = q.length - 1;
+    }
+    setQueueIndex(prev);
+    queueIndexRef.current = prev;
+    await playTrackInternal(q[prev], { fromQueue: true });
+  }, [playTrackInternal]);
 
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current;
@@ -233,6 +352,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
+    setQueue([]);
+    queueRef.current = [];
+    setQueueIndex(-1);
+    queueIndexRef.current = -1;
   }, []);
 
 
@@ -303,6 +426,34 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const off = details.seekOffset ?? 10;
       audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + off);
     });
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      const q = queueRef.current;
+      const idx = queueIndexRef.current;
+      if (!q.length) return;
+      let next = idx + 1;
+      if (next >= q.length) next = loopQueueRef.current ? 0 : idx;
+      if (next !== idx && q[next]) {
+        setQueueIndex(next);
+        queueIndexRef.current = next;
+        void playTrackRef.current(q[next], { fromQueue: true });
+      }
+    });
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      const q = queueRef.current;
+      const idx = queueIndexRef.current;
+      if (audio && audio.currentTime > 3) {
+        audio.currentTime = 0;
+        return;
+      }
+      if (!q.length) return;
+      let prev = idx - 1;
+      if (prev < 0) prev = loopQueueRef.current ? q.length - 1 : 0;
+      if (q[prev]) {
+        setQueueIndex(prev);
+        queueIndexRef.current = prev;
+        void playTrackRef.current(q[prev], { fromQueue: true });
+      }
+    });
 
     return () => {
       try {
@@ -312,6 +463,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         navigator.mediaSession.setActionHandler('seekto', null);
         navigator.mediaSession.setActionHandler('seekbackward', null);
         navigator.mediaSession.setActionHandler('seekforward', null);
+        navigator.mediaSession.setActionHandler('nexttrack', null);
+        navigator.mediaSession.setActionHandler('previoustrack', null);
       } catch {
         /* ignore */
       }
@@ -342,11 +495,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         currentTime,
         duration,
         volume,
+        queue,
+        queueIndex,
+        loopQueue,
         play,
+        playQueue,
+        playNext,
+        playPrev,
         togglePlay,
         seek,
         setVolume,
         stop,
+        setLoopQueue,
         getAnalyserData,
         analyserNode,
       }}

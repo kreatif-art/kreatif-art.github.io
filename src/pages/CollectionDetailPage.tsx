@@ -11,10 +11,24 @@ export function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { playlist, items, loading, error, refetch } = usePlaylist(id);
-  const { play } = usePlayer();
+  const { playQueue, currentTrack, isPlaying } = usePlayer();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const isOwner = !!(user && playlist && user.id === playlist.user_id);
+
+  const musicTracks = items
+    .map((it) => it.content)
+    .filter((c): c is NonNullable<typeof c> => !!c && c.type === 'music' && !!c.file_url);
+
+  const playAll = () => {
+    if (musicTracks.length) playQueue(musicTracks, 0, true);
+  };
+
+  const playFrom = (contentId: string) => {
+    const idx = musicTracks.findIndex((m) => m.id === contentId);
+    if (idx >= 0) playQueue(musicTracks, idx, true);
+  };
+
 
   const share = async () => {
     const url = window.location.href;
@@ -63,6 +77,15 @@ export function CollectionDetailPage() {
           </h1>
           {playlist.description && <p className="mt-2 text-sm text-neutral-400">{playlist.description}</p>}
           <p className="mt-2 text-xs text-neutral-600">{items.length} items</p>
+          {musicTracks.length > 0 && (
+            <button
+              type="button"
+              onClick={playAll}
+              className="mt-3 rounded-full bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-200"
+            >
+              Play all music · loops
+            </button>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {(playlist.visibility !== 'private' || isOwner) && (
@@ -113,8 +136,12 @@ export function CollectionDetailPage() {
                   </p>
                 </div>
                 {c.type === 'music' && (
-                  <button type="button" onClick={() => play(c)} className="rounded-full bg-white/90 px-3 py-1 text-xs text-neutral-900">
-                    Play
+                  <button
+                    type="button"
+                    onClick={() => playFrom(c.id)}
+                    className="rounded-full bg-white/90 px-3 py-1 text-xs text-neutral-900"
+                  >
+                    {currentTrack?.id === c.id && isPlaying ? 'Playing' : 'Play'}
                   </button>
                 )}
                 {isOwner && (

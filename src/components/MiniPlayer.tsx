@@ -4,8 +4,15 @@ import { usePlayer } from '@/context/PlayerContext';
 import { AudioBars } from '@/components/AudioBars';
 import { formatDuration, cn } from '@/lib/utils';
 
+function queueIndexLabel(queue: { id: string }[], track: { id: string }) {
+  const i = queue.findIndex((t) => t.id === track.id);
+  if (i < 0) return '';
+  return `${i + 1}/${queue.length}`;
+}
+
 export function MiniPlayer() {
-  const { currentTrack, isPlaying, togglePlay, seek, volume, setVolume, stop, currentTime, duration } = usePlayer();
+
+  const { currentTrack, isPlaying, togglePlay, seek, volume, setVolume, stop, currentTime, duration, queue, playNext, playPrev, loopQueue } = usePlayer();
 
   if (!currentTrack) return null;
 
@@ -14,12 +21,34 @@ export function MiniPlayer() {
   return (
     <div className="mini-player fixed left-0 right-0 z-50 border-t border-neutral-800 bg-neutral-950/95 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
-        <button
-          onClick={togglePlay}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 transition-transform hover:scale-105"
-        >
-          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
-        </button>
+        <div className="flex shrink-0 items-center gap-1">
+          {queue.length > 1 && (
+            <button
+              type="button"
+              onClick={() => playPrev()}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-white"
+              aria-label="Previous"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+            </button>
+          )}
+          <button
+            onClick={togglePlay}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 transition-transform hover:scale-105"
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
+          </button>
+          {queue.length > 1 && (
+            <button
+              type="button"
+              onClick={() => playNext()}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-400 hover:text-white"
+              aria-label="Next"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zm-11 6 8.5-6v12z"/></svg>
+            </button>
+          )}
+        </div>
 
         <Link to={`/content/${currentTrack.id}`} className="flex min-w-0 flex-1 items-center gap-3">
           <div className="h-10 w-10 shrink-0 overflow-hidden rounded-md bg-neutral-800">
@@ -39,6 +68,11 @@ export function MiniPlayer() {
             <p className="truncate text-sm font-medium text-white">{currentTrack.title}</p>
             <p className="truncate text-xs text-neutral-400">
               {currentTrack.profiles?.display_name || 'Unknown artist'}
+              {queue.length > 1 && (
+                <span className="text-neutral-600">
+                  {' '}· {queueIndexLabel(queue, currentTrack)}{loopQueue ? ' · loop' : ''}
+                </span>
+              )}
             </p>
           </div>
         </Link>
