@@ -33,8 +33,10 @@ export function MiniPlayer() {
             </button>
           )}
           <button
+            type="button"
             onClick={togglePlay}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 transition-transform hover:scale-105"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-neutral-900 transition-transform hover:scale-105 active:scale-95"
           >
             {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 translate-x-0.5" />}
           </button>

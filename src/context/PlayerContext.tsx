@@ -150,6 +150,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audioRef.current = new Audio();
       audioRef.current.crossOrigin = 'anonymous';
       audioRef.current.preload = 'metadata';
+      audioRef.current.playsInline = true;
+      (audioRef.current as HTMLAudioElement & { webkitPlaysInline?: boolean }).webkitPlaysInline = true;
       audioRef.current.volume = 0.8;
     }
     const audio = audioRef.current;

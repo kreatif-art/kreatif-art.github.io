@@ -651,9 +651,85 @@ body:has(.mini-player) .app-main {
 
 /* Art gallery slideshow fade */
 @keyframes gallery-fade-in {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .gallery-fade {
-  animation: gallery-fade-in 0.45s ease-out both;
+  animation: gallery-fade-in 0.35s ease-out both;
+}
+
+/* Mobile foyer / lightbox hardening */
+.art-foyer {
+  overscroll-behavior: none;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.art-foyer img {
+  -webkit-touch-callout: none;
+  pointer-events: none; /* clicks handled by stage */
+}
+
+/* Prevent iOS rubber-band from exposing gaps under fixed layers */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+
+/* ---- UX polish: a11y, touch, motion ---- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Clear keyboard focus without ugly mouse rings */
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid rgba(251, 146, 60, 0.85);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgba(251, 146, 60, 0.35);
+    color: #fff;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .gallery-fade {
+    animation: none !important;
+  }
+}
+
+/* Mobile nav: 44px minimum touch targets (Apple HIG / WCAG) */
+@media (max-width: 767px) {
+  .mobile-bottom-nav a {
+    min-height: 2.75rem;
+    justify-content: center;
+  }
+  .mini-player button {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+}
+
+/* Horizontal rails: smoother momentum on iOS */
+.h-rail {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
 }

@@ -36,7 +36,7 @@ export function MobileBottomNav() {
               key={to}
               to={to}
               className={cn(
-                'flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors',
+                'flex min-h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-[10px] font-medium transition-colors active:bg-white/5',
                 active ? 'text-orange-300' : 'text-neutral-500 hover:text-neutral-300',
               )}
             >
@@ -48,7 +48,7 @@ export function MobileBottomNav() {
         <Link
           to={profileTo}
           className={cn(
-            'flex min-w-0 flex-1 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[10px] font-medium transition-colors',
+            'flex min-h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg px-1 py-1.5 text-[10px] font-medium transition-colors active:bg-white/5',
             location.pathname.startsWith('/profile') || location.pathname === '/login'
               ? 'text-orange-300'
               : 'text-neutral-500 hover:text-neutral-300',
