@@ -550,11 +550,48 @@
 :root {
   --mobile-nav-h: 3.75rem;
   --mini-player-h: 4.25rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Explicit padding so content never sits under notch / home indicator / rounded corners */
+html {
+  /* Prevent overscroll bounce from revealing wrong colors under safe areas */
+  background-color: #0a0a0b;
+}
+
+body {
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+}
+
+/* Utility classes for components that need explicit safe-area padding */
+.safe-pad-top {
+  padding-top: max(0.75rem, var(--safe-top));
+}
+.safe-pad-bottom {
+  padding-bottom: max(0.75rem, var(--safe-bottom));
+}
+.safe-pad-x {
+  padding-left: max(1rem, var(--safe-left));
+  padding-right: max(1rem, var(--safe-right));
+}
+.safe-pad-all {
+  padding-top: max(0.75rem, var(--safe-top));
+  padding-right: max(1rem, var(--safe-right));
+  padding-bottom: max(0.75rem, var(--safe-bottom));
+  padding-left: max(1rem, var(--safe-left));
+}
+
+/* Sticky header clears the status bar / notch */
+.app-navbar {
+  padding-top: var(--safe-top);
 }
 
 .app-main {
-  padding-bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 0.5rem);
+  padding-bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 0.75rem);
 }
 @media (min-width: 768px) {
   .app-main {
@@ -564,6 +601,8 @@
 
 .mini-player {
   bottom: calc(var(--mobile-nav-h) + var(--safe-bottom));
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
 }
 @media (min-width: 768px) {
   .mini-player {
@@ -573,7 +612,7 @@
 
 /* When player visible, extra main padding on mobile */
 body:has(.mini-player) .app-main {
-  padding-bottom: calc(var(--mobile-nav-h) + var(--mini-player-h) + var(--safe-bottom) + 0.5rem);
+  padding-bottom: calc(var(--mobile-nav-h) + var(--mini-player-h) + var(--safe-bottom) + 0.75rem);
 }
 @media (min-width: 768px) {
   body:has(.mini-player) .app-main {
@@ -581,8 +620,19 @@ body:has(.mini-player) .app-main {
   }
 }
 
+/* Bottom tab bar: own safe-area padding so icons clear the home indicator */
 .mobile-bottom-nav {
-  /* height accounted via padding + safe area */
+  padding-left: var(--safe-left);
+  padding-right: var(--safe-right);
+  /* bottom padding applied inline on inner row for flexibility */
+}
+
+/* Fixed / fullscreen overlays (dialogs, gallery) should respect all insets */
+.safe-overlay {
+  padding-top: var(--safe-top);
+  padding-right: var(--safe-right);
+  padding-bottom: var(--safe-bottom);
+  padding-left: var(--safe-left);
 }
 
 /* Touch-friendly targets */

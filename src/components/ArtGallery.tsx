@@ -128,7 +128,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
       onTouchEnd={onTouchEnd}
     >
       {/* Top bar */}
-      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent px-4 pb-8 pt-[max(1rem,env(safe-area-inset-top))]">
+      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent px-4 pb-8 pt-[max(1rem,var(--safe-top))]">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-white">{current.title}</p>
           <p className="truncate text-xs text-neutral-400">{artistName}</p>
@@ -155,7 +155,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
 
       {/* Progress segments */}
       {len > 1 && (
-        <div className="absolute inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-30 flex gap-1 px-4">
+        <div className="absolute inset-x-0 top-[max(0.5rem,var(--safe-top))] z-30 flex gap-1 px-4">
           {pieces.map((_, i) => (
             <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/20">
               <div
@@ -215,7 +215,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
       )}
 
       {/* Bottom hint */}
-      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-10 text-center">
+      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-4 pb-[max(1.25rem,var(--safe-bottom))] pt-10 text-center">
         <p className="text-[11px] text-neutral-500">
           {index + 1} / {len}
           {len > 1 && (

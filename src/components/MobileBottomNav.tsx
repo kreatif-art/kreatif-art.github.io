@@ -25,8 +25,9 @@ export function MobileBottomNav() {
       )}
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-lg items-stretch justify-between px-1 pt-1"
-        style={{ paddingBottom: 'max(0.35rem, env(safe-area-inset-bottom))' }}
+      <div
+        className="mx-auto flex max-w-lg items-stretch justify-between px-1 pt-1"
+        style={{ paddingBottom: 'max(0.35rem, var(--safe-bottom))' }}
       >
         {items.map(({ to, label, icon: Icon, match }) => {
           const active = match(location.pathname);

@@ -20,7 +20,7 @@ export function OfflineBanner() {
   return (
     <div
       className="fixed left-0 right-0 top-0 z-[60] border-b border-amber-500/30 bg-amber-950/95 px-3 py-2 text-center text-xs text-amber-100 backdrop-blur-md"
-      style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}
+      style={{ paddingTop: 'max(0.5rem, var(--safe-top))' }}
       role="status"
     >
       <span className="inline-flex items-center gap-2">
