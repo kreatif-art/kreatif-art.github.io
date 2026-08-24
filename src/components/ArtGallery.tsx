@@ -78,10 +78,11 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
       }
     };
     document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
+      document.body.style.overflow = prevOverflow;
     };
   }, [onClose, next, prev]);
 
@@ -117,36 +118,56 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-black"
+      className="art-foyer fixed inset-0 z-[70] bg-black"
       role="dialog"
       aria-modal="true"
       aria-label="Art gallery"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      style={{
+        /* iOS: use dynamic viewport so fixed layer matches visible screen */
+        height: '100dvh',
+        width: '100vw',
+        maxHeight: '100dvh',
+      }}
     >
-      {/* Artwork fills the whole screen — no flex gap under the title */}
-      <button
-        type="button"
-        className="absolute inset-0 flex items-center justify-center focus:outline-none"
+      {/*
+        Image stage sits BETWEEN top chrome and bottom counter.
+        That removes the large black band under the title (letterbox + chrome stacking).
+      */}
+      <div
+        className="absolute inset-x-0 flex items-center justify-center overflow-hidden"
+        style={{
+          top: 'calc(var(--safe-top) + 3.25rem)',
+          bottom: 'calc(var(--safe-bottom) + 1.75rem)',
+        }}
         onClick={next}
-        aria-label="Next artwork"
+        role="presentation"
       >
         <img
           key={current.id}
           src={current.file_url}
           alt={current.title}
-          className="h-full w-full object-contain select-none gallery-fade"
+          className="gallery-fade max-h-full max-w-full select-none"
+          style={{
+            width: 'auto',
+            height: 'auto',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            display: 'block',
+          }}
           draggable={false}
         />
-      </button>
+      </div>
 
-      {/* Compact top chrome overlaid on the image */}
+      {/* Top chrome */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/75 via-black/35 to-transparent"
+        className="absolute inset-x-0 top-0 z-20"
         style={{ paddingTop: 'var(--safe-top)' }}
       >
         {len > 1 && (
-          <div className="flex gap-1 px-3 pt-2">
+          <div className="flex gap-1 px-3 pt-1.5">
             {pieces.map((_, i) => (
               <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25">
                 <div
@@ -159,7 +180,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
             ))}
           </div>
         )}
-        <div className="pointer-events-auto flex items-center gap-2 px-3 pb-3 pt-2">
+        <div className="flex items-center gap-2 px-3 py-2">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-medium leading-tight text-white">{current.title}</p>
             <p className="truncate text-[11px] leading-tight text-neutral-400">{artistName}</p>
@@ -211,10 +232,10 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
         </>
       )}
 
-      {/* Compact bottom counter overlaid */}
+      {/* Bottom counter */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/60 to-transparent px-3 pt-8 text-center"
-        style={{ paddingBottom: 'max(0.5rem, var(--safe-bottom))' }}
+        className="absolute inset-x-0 bottom-0 z-20 px-3 text-center"
+        style={{ paddingBottom: 'max(0.4rem, var(--safe-bottom))' }}
       >
         <p className="text-[10px] text-neutral-400">
           {index + 1} / {len}
