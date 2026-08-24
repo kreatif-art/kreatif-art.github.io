@@ -102,7 +102,11 @@ export async function createPlaylist(opts: {
     p_description: opts.description ?? null,
     p_visibility: opts.visibility ?? 'private',
   });
-  if (error) throw error;
+  if (error) {
+    const msg = error.message || error.details || 'Could not create collection';
+    throw new Error(msg);
+  }
+  if (!data) throw new Error('Could not create collection');
   return data as string;
 }
 
@@ -116,7 +120,9 @@ export async function addPlaylistItem(opts: {
     p_content_id: opts.contentId ?? null,
     p_pair_id: opts.pairId ?? null,
   });
-  if (error) throw error;
+  if (error) {
+    throw new Error(error.message || error.details || 'Could not add to collection');
+  }
   return data as string;
 }
 
