@@ -4,6 +4,7 @@ import { PlayerProvider } from '@/context/PlayerContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MiniPlayer } from '@/components/MiniPlayer';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import { SynestheticBackground } from '@/components/SynestheticBackground';
 import { PageTransition } from '@/components/PageTransition';
 import { IntroLoader } from '@/components/IntroLoader';
@@ -34,11 +35,12 @@ function Layout({ children }: { children: React.ReactNode }) {
       <div className="film-grain" aria-hidden />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
-        <main className="flex-1">
+        <main className="app-main flex-1">
           <PageTransition>{children}</PageTransition>
         </main>
-        <Footer />
+        <Footer className="hidden md:block" />
         <MiniPlayer />
+        <MobileBottomNav />
       </div>
     </div>
   );

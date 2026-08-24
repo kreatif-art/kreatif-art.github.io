@@ -1,9 +1,10 @@
 import { BrandLogo } from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
-export function Footer() {
+export function Footer({ className }: { className?: string }) {
   return (
-    <footer className="border-t border-neutral-800 bg-neutral-950">
+    <footer className={cn('border-t border-neutral-800 bg-neutral-950', className)}>
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-white">

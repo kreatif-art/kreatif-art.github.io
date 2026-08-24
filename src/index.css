@@ -31,6 +31,7 @@
     scroll-behavior: smooth;
   }
   body {
+  overflow-x: hidden;
     background-color: #0a0a0b;
     color: #e5e5e5;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -542,4 +543,58 @@
   0%, 30% { opacity: 0; transform: scaleX(0.3); }
   38% { opacity: 0.9; transform: scaleX(1); }
   55%, 100% { opacity: 0; transform: scaleX(0.5); }
+}
+
+
+/* ---- Mobile app shell + PWA safe areas ---- */
+:root {
+  --mobile-nav-h: 3.75rem;
+  --mini-player-h: 4.25rem;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.app-main {
+  padding-bottom: calc(var(--mobile-nav-h) + var(--safe-bottom) + 0.5rem);
+}
+@media (min-width: 768px) {
+  .app-main {
+    padding-bottom: 0;
+  }
+}
+
+.mini-player {
+  bottom: calc(var(--mobile-nav-h) + var(--safe-bottom));
+}
+@media (min-width: 768px) {
+  .mini-player {
+    bottom: 0;
+  }
+}
+
+/* When player visible, extra main padding on mobile */
+body:has(.mini-player) .app-main {
+  padding-bottom: calc(var(--mobile-nav-h) + var(--mini-player-h) + var(--safe-bottom) + 0.5rem);
+}
+@media (min-width: 768px) {
+  body:has(.mini-player) .app-main {
+    padding-bottom: calc(var(--mini-player-h) + 0.5rem);
+  }
+}
+
+.mobile-bottom-nav {
+  /* height accounted via padding + safe area */
+}
+
+/* Touch-friendly targets */
+@media (max-width: 767px) {
+  .navbar-desktop-links {
+    display: none;
+  }
+}
+
+/* Reduce heavy background cost on small screens slightly */
+@media (max-width: 767px) {
+  .film-grain {
+    opacity: 0.35;
+  }
 }
