@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Music, Image as ImageIcon, Link2, Trash2, Share2, ArrowLeft } from 'lucide-react';
+import { Image as ImageIcon, Link2, Trash2, Share2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePlaylist, removePlaylistItem, updatePlaylist, deletePlaylist } from '@/hooks/usePlaylists';
 import { usePlayer } from '@/context/PlayerContext';
 import { LoadingState, ErrorState } from '@/components/States';
-import type { PlaylistVisibility } from '@/types';
+import { ArtGallery } from '@/components/ArtGallery';
+import type { ContentItem, PlaylistVisibility } from '@/types';
 
 export function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -14,11 +15,17 @@ export function CollectionDetailPage() {
   const { playQueue, currentTrack, isPlaying } = usePlayer();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryStart, setGalleryStart] = useState(0);
   const isOwner = !!(user && playlist && user.id === playlist.user_id);
 
   const musicTracks = items
     .map((it) => it.content)
     .filter((c): c is NonNullable<typeof c> => !!c && c.type === 'music' && !!c.file_url);
+
+  const artPieces = items
+    .map((it) => it.content)
+    .filter((c): c is ContentItem => !!c && c.type === 'art' && !!c.file_url);
 
   const playAll = () => {
     if (musicTracks.length) playQueue(musicTracks, 0, true);
@@ -27,6 +34,13 @@ export function CollectionDetailPage() {
   const playFrom = (contentId: string) => {
     const idx = musicTracks.findIndex((m) => m.id === contentId);
     if (idx >= 0) playQueue(musicTracks, idx, true);
+  };
+
+  const openGallery = (contentId?: string) => {
+    if (!artPieces.length) return;
+    const idx = contentId ? artPieces.findIndex((a) => a.id === contentId) : 0;
+    setGalleryStart(idx >= 0 ? idx : 0);
+    setGalleryOpen(true);
   };
 
 
@@ -77,15 +91,27 @@ export function CollectionDetailPage() {
           </h1>
           {playlist.description && <p className="mt-2 text-sm text-neutral-400">{playlist.description}</p>}
           <p className="mt-2 text-xs text-neutral-600">{items.length} items</p>
-          {musicTracks.length > 0 && (
-            <button
-              type="button"
-              onClick={playAll}
-              className="mt-3 rounded-full bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-200"
-            >
-              Play all music · loops
-            </button>
-          )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {musicTracks.length > 0 && (
+              <button
+                type="button"
+                onClick={playAll}
+                className="rounded-full bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-200"
+              >
+                Play all music · loops
+              </button>
+            )}
+            {artPieces.length > 0 && (
+              <button
+                type="button"
+                onClick={() => openGallery()}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-medium text-white hover:bg-white/10"
+              >
+                <ImageIcon className="h-3.5 w-3.5" />
+                View art gallery · 3s
+              </button>
+            )}
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           {(playlist.visibility !== 'private' || isOwner) && (
@@ -142,6 +168,15 @@ export function CollectionDetailPage() {
                     className="rounded-full bg-white/90 px-3 py-1 text-xs text-neutral-900"
                   >
                     {currentTrack?.id === c.id && isPlaying ? 'Playing' : 'Play'}
+                  </button>
+                )}
+                {c.type === 'art' && artPieces.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => openGallery(c.id)}
+                    className="rounded-full border border-white/20 px-3 py-1 text-xs text-neutral-300 hover:bg-white/10"
+                  >
+                    Gallery
                   </button>
                 )}
                 {isOwner && (
@@ -202,6 +237,14 @@ export function CollectionDetailPage() {
           </li>
         )}
       </ul>
+
+      {galleryOpen && artPieces.length > 0 && (
+        <ArtGallery
+          pieces={artPieces}
+          startIndex={galleryStart}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </div>
   );
 }
