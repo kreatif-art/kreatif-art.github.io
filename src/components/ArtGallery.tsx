@@ -37,7 +37,6 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
   const next = useCallback(() => go(1), [go]);
   const prev = useCallback(() => go(-1), [go]);
 
-  // Auto-advance + progress bar
   useEffect(() => {
     if (paused || len <= 1) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -65,7 +64,6 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
     };
   }, [paused, len, index]);
 
-  // Keyboard + body scroll lock
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -87,7 +85,6 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
     };
   }, [onClose, next, prev]);
 
-  // Preload neighbors
   useEffect(() => {
     if (len < 2) return;
     const preload = (i: number) => {
@@ -120,60 +117,17 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex flex-col bg-black"
+      className="fixed inset-0 z-[70] bg-black"
       role="dialog"
       aria-modal="true"
       aria-label="Art gallery"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Top bar */}
-      <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 to-transparent px-4 pb-8 pt-[max(1rem,var(--safe-top))]">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-white">{current.title}</p>
-          <p className="truncate text-xs text-neutral-400">{artistName}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setPaused((p) => !p)}
-            className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-            aria-label={paused ? 'Resume slideshow' : 'Pause slideshow'}
-          >
-            {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-            aria-label="Close gallery"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Progress segments */}
-      {len > 1 && (
-        <div className="absolute inset-x-0 top-[max(0.5rem,var(--safe-top))] z-30 flex gap-1 px-4">
-          {pieces.map((_, i) => (
-            <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/20">
-              <div
-                className="h-full bg-white transition-[width] duration-75 ease-linear"
-                style={{
-                  width:
-                    i < index ? '100%' : i === index ? `${progress}%` : '0%',
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Main image — click advances */}
+      {/* Artwork fills the whole screen — no flex gap under the title */}
       <button
         type="button"
-        className="relative flex flex-1 items-center justify-center overflow-hidden focus:outline-none"
+        className="absolute inset-0 flex items-center justify-center focus:outline-none"
         onClick={next}
         aria-label="Next artwork"
       >
@@ -181,12 +135,55 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
           key={current.id}
           src={current.file_url}
           alt={current.title}
-          className="max-h-full max-w-full object-contain select-none gallery-fade"
+          className="h-full w-full object-contain select-none gallery-fade"
           draggable={false}
         />
       </button>
 
-      {/* Nav arrows (desktop) */}
+      {/* Compact top chrome overlaid on the image */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/75 via-black/35 to-transparent"
+        style={{ paddingTop: 'var(--safe-top)' }}
+      >
+        {len > 1 && (
+          <div className="flex gap-1 px-3 pt-2">
+            {pieces.map((_, i) => (
+              <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/25">
+                <div
+                  className="h-full bg-white transition-[width] duration-75 ease-linear"
+                  style={{
+                    width: i < index ? '100%' : i === index ? `${progress}%` : '0%',
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="pointer-events-auto flex items-center gap-2 px-3 pb-3 pt-2">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-medium leading-tight text-white">{current.title}</p>
+            <p className="truncate text-[11px] leading-tight text-neutral-400">{artistName}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPaused((p) => !p)}
+            className="rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25"
+            aria-label={paused ? 'Resume slideshow' : 'Pause slideshow'}
+          >
+            {paused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-white/15 p-2 text-white backdrop-blur-sm hover:bg-white/25"
+            aria-label="Close gallery"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop arrows */}
       {len > 1 && (
         <>
           <button
@@ -195,7 +192,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
               e.stopPropagation();
               prev();
             }}
-            className="absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-black/50 p-3 text-white backdrop-blur-sm hover:bg-black/70 sm:block"
+            className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-black/40 p-2.5 text-white backdrop-blur-sm hover:bg-black/60 sm:block"
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -206,7 +203,7 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
               e.stopPropagation();
               next();
             }}
-            className="absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-black/50 p-3 text-white backdrop-blur-sm hover:bg-black/70 sm:block"
+            className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 rounded-full bg-black/40 p-2.5 text-white backdrop-blur-sm hover:bg-black/60 sm:block"
             aria-label="Next"
           >
             <ChevronRight className="h-5 w-5" />
@@ -214,14 +211,15 @@ export function ArtGallery({ pieces, startIndex = 0, onClose }: ArtGalleryProps)
         </>
       )}
 
-      {/* Bottom hint */}
-      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-4 pb-[max(1.25rem,var(--safe-bottom))] pt-10 text-center">
-        <p className="text-[11px] text-neutral-500">
+      {/* Compact bottom counter overlaid */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/60 to-transparent px-3 pt-8 text-center"
+        style={{ paddingBottom: 'max(0.5rem, var(--safe-bottom))' }}
+      >
+        <p className="text-[10px] text-neutral-400">
           {index + 1} / {len}
           {len > 1 && (
-            <span className="ml-2 text-neutral-600">
-              · tap or swipe · {paused ? 'paused' : 'auto every 3s'}
-            </span>
+            <span className="text-neutral-500"> · tap or swipe · {paused ? 'paused' : '3s'}</span>
           )}
         </p>
       </div>
