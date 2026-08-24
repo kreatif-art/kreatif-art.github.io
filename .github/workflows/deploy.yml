@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Ensure Vite entry index.html
         run: |
@@ -67,25 +65,48 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify build output
+        run: |
+          test -d dist/assets
+          js=$(find dist/assets -name 'index-*.js' | head -1)
+          css=$(find dist/assets -name 'index-*.css' | head -1)
+          echo "JS=$js CSS=$css"
+          test -n "$js" && test -s "$js"
+          test -n "$css" && test -s "$css"
+          test -f dist/index.html
+          grep -q 'assets/index-' dist/index.html
+
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
 
-      # Repo Pages source is "legacy" (branch main /). Publish dist into the branch root
-      # so kreatif-art.github.io actually serves the latest build.
       - name: Publish dist to branch root
         run: |
-          set -e
-          # Remove previous hashed bundles (keep public static files)
+          set -euo pipefail
+          js_count=$(find dist/assets -name '*.js' | wc -l)
+          if [ "$js_count" -lt 1 ]; then
+            echo "Refusing to publish: no JS in dist/assets"
+            exit 1
+          fi
+
+          # Replace hashed bundles atomically
           rm -rf assets
           mkdir -p assets
           cp -R dist/assets/. assets/
           cp dist/index.html index.html
           cp dist/404.html 404.html
-          # Public files from Vite public/ are already copied into dist by build
+
           for f in favicon.png favicon.svg apple-touch-icon.png icon-192.png icon-512.png logo.png manifest.webmanifest sw.js; do
             if [ -f "dist/$f" ]; then cp "dist/$f" "$f"; fi
           done
           if [ -d dist/fonts ]; then rm -rf fonts; cp -R dist/fonts fonts; fi
+
+          # Sanity: index must reference files that exist
+          ref_js=$(grep -oE 'assets/index-[^"]+\.js' index.html | head -1)
+          ref_css=$(grep -oE 'assets/index-[^"]+\.css' head -1 || true)
+          ref_css=$(grep -oE 'assets/index-[^"]+\.css' index.html | head -1)
+          test -f "$ref_js"
+          test -f "$ref_css"
+          echo "Published $ref_js ($(wc -c < "$ref_js") bytes) and $ref_css"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -96,26 +117,3 @@ jobs:
             git commit -m "chore: publish production build [skip ci]"
             git push origin HEAD:main
           fi
-
-      # Also upload Pages artifact (works if repo Pages source is switched to Actions later)
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        continue-on-error: true
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        continue-on-error: true
-        with:
-          path: ./dist
-
-  deploy-actions-pages:
-    if: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build-and-publish
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
