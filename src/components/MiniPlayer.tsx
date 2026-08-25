@@ -19,8 +19,8 @@ export function MiniPlayer() {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="mini-player fixed left-0 right-0 z-50 border-t border-neutral-800 bg-neutral-950/95 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
+    <div className="mini-player fixed left-0 right-0 z-50 border-t border-white/[0.06] bg-[rgba(7,7,8,0.92)] backdrop-blur-2xl">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-2.5 sm:px-6">
         <div className="flex shrink-0 items-center gap-1">
           {queue.length > 1 && (
             <button

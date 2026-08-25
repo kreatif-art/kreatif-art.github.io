@@ -20,7 +20,7 @@ export function MobileBottomNav() {
   return (
     <nav
       className={cn(
-        'mobile-bottom-nav fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-neutral-950/95 backdrop-blur-xl md:hidden',
+        'mobile-bottom-nav fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.06] bg-[rgba(7,7,8,0.92)] backdrop-blur-2xl md:hidden',
         currentTrack && 'mobile-bottom-nav--with-player',
       )}
       aria-label="Primary"

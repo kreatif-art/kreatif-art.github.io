@@ -33,12 +33,12 @@ export function HomePage() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-6 pb-0 sm:px-6 sm:pt-8 lg:pt-10">
-          <div className="grid items-start gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 xl:gap-10">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-5 pb-0 sm:px-6 sm:pt-7 lg:pt-8">
+          <div className="grid items-start gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-7 xl:gap-9">
             <div className="max-w-xl pt-2 lg:pt-4" data-fade-up>
-              <p className="label-caps mb-3 text-orange-400/90">Sound &amp; sight</p>
+              <p className="label-caps mb-2.5 text-orange-400/80">Sound &amp; sight</p>
 
-              <h1 className="hero-title text-4xl leading-[1.08] text-white sm:text-5xl lg:text-[3.35rem]">
+              <h1 className="hero-title text-[2.35rem] leading-[1.05] text-white sm:text-5xl lg:text-[3.25rem]">
                 A space for original{' '}
                 <span className="font-musicnet not-italic text-orange-300">music</span>
                 <br className="hidden sm:block" />
@@ -47,16 +47,15 @@ export function HomePage() {
                 <span className="text-white/55">.</span>
               </h1>
 
-              <p className="mt-4 max-w-sm text-sm leading-relaxed text-neutral-400">
+              <p className="mt-3.5 max-w-sm text-[13px] leading-relaxed text-neutral-500">
                 For day-dreamers, makers, and collectors — work that pairs sound with image, and meaning with craft.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2.5">
+              <div className="mt-5 flex flex-wrap gap-2">
                 {user && profile?.is_artist ? (
                   <Link
                     to="/upload"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
-                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                    className="btn-primary"
                   >
                     <Upload className="h-4 w-4" />
                     Upload work
@@ -64,8 +63,7 @@ export function HomePage() {
                 ) : user ? (
                   <Link
                     to="/profile"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
-                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                    className="btn-primary"
                   >
                     Enable artist mode
                     <ArrowRight className="h-4 w-4" />
@@ -73,8 +71,7 @@ export function HomePage() {
                 ) : (
                   <Link
                     to="/signup"
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900 transition-transform duration-300 hover:scale-[1.02]"
-                    style={{ transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                    className="btn-primary"
                   >
                     Join Kreatif
                     <ArrowRight className="h-4 w-4" />
@@ -82,7 +79,7 @@ export function HomePage() {
                 )}
                 <Link
                   to="/browse/music"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 text-sm font-medium text-neutral-300 transition-colors hover:border-white/30 hover:text-white"
+                  className="btn-ghost"
                 >
                   Explore
                 </Link>

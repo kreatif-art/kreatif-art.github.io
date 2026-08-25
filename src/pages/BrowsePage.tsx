@@ -76,8 +76,8 @@ export function BrowsePage({ type }: { type: 'music' | 'art' }) {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="mx-auto max-w-7xl px-4 pt-6 pb-4 sm:px-6">
-        <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto max-w-7xl px-4 pt-5 pb-3 sm:px-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="label-caps mb-2 text-neutral-500">
               {isMusic ? 'Sound' : 'Sight'}
@@ -90,7 +90,7 @@ export function BrowsePage({ type }: { type: 'music' | 'art' }) {
                 <span className="font-arthure not-italic text-pink-300/90">Art</span>
               )}
             </h1>
-            <p className="mt-2 text-sm text-neutral-500">Filter by genre, then search</p>
+            <p className="mt-1.5 text-[13px] text-neutral-500">Filter by genre, then search</p>
           </div>
 
           <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] p-1">

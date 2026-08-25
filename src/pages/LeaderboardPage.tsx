@@ -94,7 +94,7 @@ export function LeaderboardPage() {
   }, [tab, fetchLeaderboard]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 pb-24">
+    <div className="min-h-screen bg-transparent pb-24">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -106,7 +106,7 @@ export function LeaderboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mb-6 flex justify-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900 p-1">
+        <div className="mb-6 flex justify-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] p-1">
           <button
             onClick={() => setTab('music')}
             className={cn(
@@ -138,7 +138,7 @@ export function LeaderboardPage() {
               <Link
                 key={entry.profile.id}
                 to={`/artist/${entry.profile.id}`}
-                className="group flex items-center gap-4 rounded-xl border border-neutral-800 bg-neutral-900 p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/80"
+                className="group flex items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.03] p-4 transition-all hover:border-neutral-700 hover:bg-neutral-900/80"
               >
                 {/* Rank */}
                 <div className={cn(

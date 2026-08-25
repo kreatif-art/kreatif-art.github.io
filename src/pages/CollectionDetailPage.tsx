@@ -92,7 +92,7 @@ export function CollectionDetailPage() {
   if (error || !playlist) return <ErrorState message={error || 'Not found'} />;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 pb-28 sm:px-6 sm:py-14 sm:pb-14">
+    <div className="mx-auto max-w-3xl px-4 py-8 pb-28 sm:px-6 sm:py-12 sm:pb-14">
       <Link to="/collections" className="mb-6 inline-flex items-center gap-2 text-xs text-neutral-500 hover:text-neutral-300">
         <ArrowLeft className="h-3.5 w-3.5" /> Collections
       </Link>
@@ -211,7 +211,7 @@ export function CollectionDetailPage() {
               const c = it.content;
               const cover = c.cover_image_url;
               return (
-                <li key={it.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <li key={it.id} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.03] p-3">
                   <Link to={`/content/${c.id}`} className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-neutral-900">
                     {cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : null}
                   </Link>
@@ -246,7 +246,7 @@ export function CollectionDetailPage() {
             if (it.pair) {
               const p = it.pair;
               return (
-                <li key={it.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+                <li key={it.id} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.03] p-3">
                   <Link to={`/pair/${p.id}`} className="flex h-14 w-20 shrink-0 overflow-hidden rounded-lg">
                     <div className="w-1/2 bg-neutral-900">
                       {p.music?.cover_image_url && (

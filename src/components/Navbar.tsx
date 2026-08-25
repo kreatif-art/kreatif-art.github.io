@@ -29,23 +29,23 @@ export function Navbar() {
   };
 
   return (
-    <header className="app-navbar sticky top-0 z-40 border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-6">
+    <header className="app-navbar sticky top-0 z-40 border-b border-white/[0.06] bg-[rgba(7,7,8,0.78)] backdrop-blur-2xl">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
+        <div className="flex items-center gap-5">
           <Link to="/" className="flex items-center gap-2.5" title="Kreatif — Sight & Sound">
-            <BrandLogo className="h-8 w-8 rounded-sm" />
-            <span className="text-lg font-semibold tracking-tight text-white">Kreatif</span>
+            <BrandLogo className="h-7 w-7 rounded-sm" />
+            <span className="text-[15px] font-semibold tracking-[-0.02em] text-white">Kreatif</span>
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-0.5 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
                 className={cn(
-                  'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors',
                   isActive(link.to)
-                    ? 'bg-neutral-800 text-white'
-                    : 'text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200',
+                    ? 'bg-white/[0.08] text-white'
+                    : 'text-neutral-500 hover:bg-white/[0.04] hover:text-neutral-200',
                 )}
               >
                 <link.icon className="h-4 w-4" />
@@ -61,7 +61,7 @@ export function Navbar() {
               {profile?.is_artist && (
                 <Link
                   to="/upload"
-                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-[0_4px_16px_rgba(249,115,22,0.25)] transition-opacity hover:opacity-90"
                 >
                   <Upload className="h-4 w-4" />
                   Upload

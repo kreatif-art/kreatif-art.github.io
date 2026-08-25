@@ -44,7 +44,7 @@ export function CollectionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 pb-28 sm:px-6 sm:py-14 sm:pb-14">
+    <div className="mx-auto max-w-3xl px-4 py-8 pb-28 sm:px-6 sm:py-12 sm:pb-14">
       <p className="label-caps mb-1 text-orange-400/80">Your library</p>
       <h1
         className="text-3xl text-white sm:text-4xl"
@@ -110,7 +110,7 @@ export function CollectionsPage() {
             <li key={pl.id}>
               <Link
                 to={`/collections/${pl.id}`}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
+                className="flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-4 transition-colors hover:border-white/20 hover:bg-white/[0.05]"
               >
                 <div>
                   <p className="font-medium text-white">{pl.title}</p>

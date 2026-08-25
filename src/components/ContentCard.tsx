@@ -49,11 +49,9 @@ export function ContentCard({ item }: { item: ContentItem }) {
       onMouseMove={isArt ? onArtMove : undefined}
       onMouseLeave={isArt ? onArtLeave : undefined}
       className={cn(
-        'glass-card group relative flex h-full flex-col overflow-hidden rounded-2xl',
-        'border border-white/[0.08] bg-white/[0.04] backdrop-blur-xl',
-        'shadow-[0_8px_32px_rgba(0,0,0,0.35)]',
-        'transition-[transform,box-shadow,border-color,background-color] duration-300 ease-out',
-        'hover:border-white/[0.14] hover:bg-white/[0.07] hover:shadow-[0_12px_40px_rgba(0,0,0,0.45)]',
+        'glass-card group relative flex h-full flex-col overflow-hidden rounded-[var(--radius-card)]',
+        'transition-[transform,box-shadow,border-color,background] duration-300 ease-out',
+        'hover:border-white/[0.12] hover:shadow-[var(--shadow-card-hover)]',
         isArt && 'will-change-transform [transform-style:preserve-3d]',
       )}
       style={isArt ? { transform: 'perspective(900px) rotateX(0) rotateY(0)' } : undefined}
@@ -131,8 +129,8 @@ export function ContentCard({ item }: { item: ContentItem }) {
             onClick={handlePlay}
             aria-label={isCurrent && isPlaying ? 'Pause' : 'Play'}
             className={cn(
-              'absolute bottom-3 right-3 z-30 flex h-11 w-11 items-center justify-center rounded-full',
-              'bg-white/95 text-neutral-900 shadow-lg shadow-black/30 backdrop-blur-sm',
+              'absolute bottom-2.5 right-2.5 z-30 flex h-10 w-10 items-center justify-center rounded-full',
+              'bg-white text-neutral-900 shadow-[0_4px_16px_rgba(0,0,0,0.4)]',
               'transition-all duration-300',
               isCurrent && isPlaying
                 ? 'opacity-100 scale-100'
@@ -150,11 +148,11 @@ export function ContentCard({ item }: { item: ContentItem }) {
           </button>
         )}
 
-        <div className="absolute left-3 top-3 z-30 flex flex-wrap gap-1">
+        <div className="absolute left-2.5 top-2.5 z-30 flex flex-wrap gap-1">
           <div
             className={cn(
-              'rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
-              'border border-white/10 bg-black/45 text-white/90 backdrop-blur-md',
+              'rounded-full px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.12em]',
+              'border border-white/10 bg-black/50 text-white/85 backdrop-blur-md',
             )}
           >
             {isMusic ? 'Music' : 'Art'}
@@ -173,13 +171,13 @@ export function ContentCard({ item }: { item: ContentItem }) {
       </div>
 
       {/* Meta */}
-      <div className="relative z-10 flex flex-1 flex-col border-t border-white/[0.06] px-3.5 py-3">
-        <h3 className="truncate text-sm font-medium tracking-tight text-white/95">{item.title}</h3>
-        <p className="mt-0.5 truncate text-xs text-neutral-400">
+      <div className="relative z-10 flex flex-1 flex-col border-t border-white/[0.05] px-3 py-2.5">
+        <h3 className="truncate text-[13px] font-medium tracking-tight text-white/95">{item.title}</h3>
+        <p className="mt-0.5 truncate text-[11px] text-neutral-500">
           {item.profiles?.display_name || 'Unknown artist'}
         </p>
-        <div className="mt-2.5 flex items-center justify-between gap-2">
-          <span className="text-[11px] text-neutral-500">
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="text-[10px] text-neutral-600">
             {isMusic && item.duration_sec ? (
               <span className="tabular-nums text-neutral-400">{formatDuration(item.duration_sec)}</span>
             ) : (
@@ -190,8 +188,8 @@ export function ContentCard({ item }: { item: ContentItem }) {
             ) : null}
           </span>
           {item.like_count !== undefined && (
-            <span className="flex items-center gap-1 text-[11px] text-neutral-400">
-              <Heart className="h-3 w-3" />
+            <span className="flex items-center gap-1 text-[10px] text-neutral-500">
+              <Heart className="h-2.5 w-2.5" />
               {formatNumber(item.like_count)}
             </span>
           )}
