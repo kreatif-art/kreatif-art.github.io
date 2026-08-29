@@ -243,7 +243,7 @@ export function UploadPage() {
 
       setTimeout(() => {
         navigate(`/content/${contentData.id}`);
-      }, 1500);
+      }, 2200);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
       setUploading(false);
@@ -302,12 +302,15 @@ export function UploadPage() {
   if (success) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-4">
-        <div className="text-center">
+        <div className="max-w-sm text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-900/30">
             <CheckCircle2 className="h-8 w-8 text-green-400" />
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-white">Upload successful!</h1>
-          <p className="mt-2 text-sm text-neutral-400">Redirecting to your content...</p>
+          <h1 className="mt-4 text-2xl font-bold text-white">You&apos;re live</h1>
+          <p className="mt-2 text-sm text-neutral-400">
+            Work is published. Opening the page so you can share the link with fans.
+          </p>
+          <p className="mt-3 text-xs text-neutral-600">Tip: complete your profile bio and avatar for stronger discovery.</p>
         </div>
       </div>
     );

@@ -138,7 +138,8 @@ export function TipButton({ artistId, artistName, contentId, className }: Props)
                   (artist share ${(artistGets / 100).toFixed(2)} after the 10% platform fee).
                 </p>
                 <p className="text-xs leading-relaxed text-neutral-500">
-                  Card checkout is in beta and not live on this environment yet. When Stripe is connected, pending tips can be completed — the artist is not paid until payment succeeds.
+                  Checkout is rolling out. Your intent is saved as <span className="text-neutral-300">pending</span>.
+                  The artist is only paid after card payment succeeds (10% platform fee). Artists connect Stripe Express from Profile to withdraw.
                 </p>
                 <button type="button" onClick={() => setOpen(false)} className="rounded-full bg-white px-5 py-2 text-sm font-medium text-neutral-900">
                   Close

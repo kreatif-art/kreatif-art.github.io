@@ -3,6 +3,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { CreatorOnboarding } from '@/components/CreatorOnboarding';
+import { ShareButton } from '@/components/ShareButton';
 import { useContent } from '@/hooks/useContent';
 import { ContentCard } from '@/components/ContentCard';
 import { LoadingState, EmptyState } from '@/components/States';
@@ -341,6 +343,33 @@ export function ProfilePage() {
 
         {/* Upload CTA */}
         
+        <div className="mb-6">
+          <CreatorOnboarding />
+        </div>
+
+        {profile.is_artist && (
+          <div className="mb-6 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-5">
+            <p className="text-sm font-medium text-white">Why publish on Kreatif</p>
+            <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-neutral-400">
+              <li>• One profile for <span className="text-neutral-200">music and visual art</span></li>
+              <li>• Fans can <span className="text-neutral-200">subscribe, like, collect, and tip</span> (10% platform fee)</li>
+              <li>• Share your public page: <span className="text-neutral-200">/artist/{profile.id}</span></li>
+            </ul>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link to={`/artist/${profile.id}`} className="btn-ghost text-xs">
+                View public profile
+              </Link>
+              <ShareButton
+                title={`${profile.display_name} on Kreatif`}
+                text={profile.bio?.slice(0, 100) || 'Original work on Kreatif — Sight & Sound'}
+                url={typeof window !== 'undefined' ? `${window.location.origin}/artist/${profile.id}` : undefined}
+                label="Copy profile link"
+                className="text-xs"
+              />
+            </div>
+          </div>
+        )}
+
         {profile.is_artist && (
           <div className="mb-8 space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">

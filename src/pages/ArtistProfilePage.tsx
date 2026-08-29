@@ -9,6 +9,8 @@ import { getInitials, formatNumber, cn } from '@/lib/utils';
 import { Music, Image, UserPlus, UserCheck, Heart, Edit3 } from 'lucide-react';
 import type { Profile } from '@/types';
 import { TipButton } from '@/components/TipButton';
+import { ShareButton } from '@/components/ShareButton';
+import { setShareMeta, resetShareMeta } from '@/lib/shareMeta';
 
 export function ArtistProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -82,6 +84,18 @@ export function ArtistProfilePage() {
     fetchArtistData();
   }, [fetchArtistData]);
 
+  useEffect(() => {
+    if (!artist) return;
+    const img = artist.avatar_url || undefined;
+    setShareMeta({
+      title: `${artist.display_name} on Kreatif`,
+      description: artist.bio?.slice(0, 140) || `Original music and visual art by ${artist.display_name} — Sight & Sound.`,
+      url: typeof window !== 'undefined' ? window.location.href : undefined,
+      image: img,
+    });
+    return () => resetShareMeta();
+  }, [artist]);
+
   const handleSubscribe = async () => {
     if (!user || !id) return;
     if (isSubscribed) {
@@ -133,7 +147,7 @@ export function ArtistProfilePage() {
               </span>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {isOwnProfile ? (
               <Link to="/profile" className="flex items-center gap-2 rounded-lg border border-neutral-700 px-4 py-2 text-sm font-medium text-neutral-200 hover:bg-neutral-800">
                 <Edit3 className="h-4 w-4" /> Edit profile
@@ -153,9 +167,21 @@ export function ArtistProfilePage() {
                   {isSubscribed ? 'Subscribed' : 'Subscribe'}
                 </button>
                 <TipButton artistId={artist.id} artistName={artist.display_name} />
+                <ShareButton
+                  title={`${artist.display_name} on Kreatif`}
+                  text={artist.bio?.slice(0, 100) || `Discover ${artist.display_name} on Kreatif`}
+                  label="Share profile"
+                />
               </>
             ) : (
-              <TipButton artistId={artist.id} artistName={artist.display_name} />
+              <>
+                <TipButton artistId={artist.id} artistName={artist.display_name} />
+                <ShareButton
+                  title={`${artist.display_name} on Kreatif`}
+                  text={`Discover ${artist.display_name} on Kreatif`}
+                  label="Share profile"
+                />
+              </>
             )}
           </div>
         </div>
@@ -180,6 +206,13 @@ export function ArtistProfilePage() {
         {artist.bio && (
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">{artist.bio}</p>
         )}
+
+        {/* Artist value — one screen */}
+        <div className="mt-6 grid gap-2 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 text-xs text-neutral-400 sm:grid-cols-3">
+          <p><span className="font-medium text-neutral-200">Catalog</span> — music &amp; art in one profile</p>
+          <p><span className="font-medium text-neutral-200">Support</span> — tips with a clear 10% platform fee</p>
+          <p><span className="font-medium text-neutral-200">Audience</span> — subscribe &amp; likes surface rising work</p>
+        </div>
 
         {/* Tabs */}
         <div className="mt-8 flex gap-2 border-b border-neutral-800">

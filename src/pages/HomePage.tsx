@@ -7,6 +7,10 @@ import { SoundSightChapter } from '@/components/SoundSightChapter';
 import { PairOfTheDay } from '@/components/PairOfTheDay';
 import { useAuth } from '@/context/AuthContext';
 import { useFeaturedPairs } from '@/hooks/usePairs';
+import { useNewThisWeek, useRising } from '@/hooks/useDiscovery';
+import { ContentCard } from '@/components/ContentCard';
+import { CreatorOnboarding } from '@/components/CreatorOnboarding';
+import { HorizontalRail } from '@/components/HorizontalRail';
 
 function isImageUrl(url?: string | null) {
   if (!url) return false;
@@ -18,6 +22,8 @@ export function HomePage() {
   const { user, profile } = useAuth();
   const rootRef = useFadeUpRoot<HTMLDivElement>();
   const { pairs: featuredPairs } = useFeaturedPairs(8);
+  const { items: newItems } = useNewThisWeek(12);
+  const { items: risingItems } = useRising(12);
 
   return (
     <div ref={rootRef} className="min-h-screen bg-transparent">
@@ -113,6 +119,67 @@ export function HomePage() {
         </div>
       </section>
 
+
+      {user && (
+        <section className="border-b border-white/[0.06] py-6">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <CreatorOnboarding />
+          </div>
+        </section>
+      )}
+
+      {/* New this week */}
+      {newItems.length > 0 && (
+        <section className="border-b border-white/[0.06] py-8 sm:py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <p className="label-caps mb-1 text-orange-400/80">Fresh</p>
+                <h2 className="text-xl text-white sm:text-2xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
+                  New this week
+                </h2>
+              </div>
+              <Link to="/browse/music" className="text-xs text-neutral-500 hover:text-neutral-300">
+                Browse all
+              </Link>
+            </div>
+            <HorizontalRail tone="music">
+              {newItems.map((item) => (
+                <div key={item.id} className="w-[9.5rem] shrink-0 sm:w-[11rem]">
+                  <ContentCard item={item} />
+                </div>
+              ))}
+            </HorizontalRail>
+          </div>
+        </section>
+      )}
+
+      {/* Rising */}
+      {risingItems.length > 0 && (
+        <section className="border-b border-white/[0.06] py-8 sm:py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-4 flex items-end justify-between gap-3">
+              <div>
+                <p className="label-caps mb-1 text-pink-400/80">Momentum</p>
+                <h2 className="text-xl text-white sm:text-2xl" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: 'italic' }}>
+                  Rising
+                </h2>
+                <p className="mt-1 text-xs text-neutral-500">Works picking up likes recently</p>
+              </div>
+              <Link to="/leaderboard" className="text-xs text-neutral-500 hover:text-neutral-300">
+                Leaderboard
+              </Link>
+            </div>
+            <HorizontalRail tone="art">
+              {risingItems.map((item) => (
+                <div key={item.id} className="w-[9.5rem] shrink-0 sm:w-[11rem]">
+                  <ContentCard item={item} />
+                </div>
+              ))}
+            </HorizontalRail>
+          </div>
+        </section>
+      )}
 
       <SoundSightChapter />
 
