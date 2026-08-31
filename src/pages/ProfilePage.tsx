@@ -317,12 +317,19 @@ export function ProfilePage() {
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  rows={3}
+                  rows={4}
                   maxLength={500}
-                  placeholder="Tell people about yourself..."
+                  placeholder="Jazz for rooms that go quiet. Warm keys, late sessions. Subscribe for drops — tip if a track sticks."
                   className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-2.5 text-sm text-neutral-200 placeholder-neutral-500 focus:border-neutral-600 focus:outline-none"
                 />
-                <p className="mt-1 text-xs text-neutral-500">{bio.length}/500</p>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-500">
+                  <span className="text-neutral-400">3 beats work best:</span> who you are → one vivid image → what to do next (subscribe / tip / start with…). Aim for ~150–220 characters.
+                </p>
+                <p className={cn('mt-1 text-xs', bio.trim().length > 0 && bio.trim().length < 40 ? 'text-amber-400/90' : 'text-neutral-500')}>
+                  {bio.length}/500
+                  {bio.trim().length > 0 && bio.trim().length < 40 ? ' · add a bit more so fans get the vibe' : ''}
+                  {bio.trim().length >= 150 && bio.trim().length <= 280 ? ' · strong length' : ''}
+                </p>
               </div>
               <button
                 onClick={handleSave}

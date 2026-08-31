@@ -65,16 +65,25 @@ export function PairOfTheDay() {
             >
               Pair of the Day
             </h2>
-            <p className="mt-1 text-xs text-neutral-500">One track. One artwork. Share the dual moment.</p>
+            <p className="mt-1 text-xs text-neutral-500">One track. One artwork. Open the pair, play, share the dual moment.</p>
           </div>
-          <button
-            type="button"
-            onClick={share}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs text-neutral-200 hover:border-orange-400/40 hover:bg-orange-500/10"
-          >
-            <Share2 className="h-3.5 w-3.5" />
-            {copied ? 'Link copied' : 'Share pair'}
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to={`/pair/${pair.id}`}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-neutral-100"
+            >
+              <Link2 className="h-3.5 w-3.5" />
+              View full pair
+            </Link>
+            <button
+              type="button"
+              onClick={share}
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs text-neutral-200 hover:border-orange-400/40 hover:bg-orange-500/10"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              {copied ? 'Link copied' : 'Share pair'}
+            </button>
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03]">

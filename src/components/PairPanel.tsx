@@ -85,6 +85,12 @@ export function PairPanel({ pairs, currentType, onChanged, className }: Props) {
                     </button>
                   )}
                   <Link
+                    to={`/pair/${pair.id}`}
+                    className="rounded-full border border-orange-400/25 bg-orange-500/10 px-3 py-1 text-[11px] text-orange-100 hover:bg-orange-500/20"
+                  >
+                    Open pair
+                  </Link>
+                  <Link
                     to={`/content/${other.id}`}
                     className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-neutral-200 hover:bg-white/10"
                   >

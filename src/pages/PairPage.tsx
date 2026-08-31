@@ -4,6 +4,7 @@ import { Link2, Music, Image as ImageIcon, Share2, Play } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePlayer } from '@/context/PlayerContext';
 import { setShareMeta, resetShareMeta } from '@/lib/shareMeta';
+import { ShareButton } from '@/components/ShareButton';
 import { AddToCollectionButton } from '@/components/AddToCollectionButton';
 import { LoadingState, ErrorState } from '@/components/States';
 import type { ContentPair, ContentItem } from '@/types';
@@ -141,14 +142,11 @@ export function PairPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <AddToCollectionButton pairId={pair.id} />
-          <button
-            type="button"
-            onClick={share}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm text-neutral-200 hover:bg-white/5"
-          >
-            <Share2 className="h-4 w-4" />
-            {copied ? 'Copied' : 'Share this pair'}
-          </button>
+          <ShareButton
+            title={`${music.title} × ${art.title} — Kreatif Pair`}
+            text={pair.note || 'Sound and sight paired on Kreatif'}
+            label="Share this pair"
+          />
           <Link to="/" className="rounded-full px-5 py-2.5 text-sm text-neutral-500 hover:text-neutral-300">
             Back home
           </Link>

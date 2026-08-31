@@ -29,7 +29,10 @@ export function setShareMeta(opts: {
   ensure('property', 'og:type', 'website');
   ensure('property', 'og:url', url);
   ensure('property', 'og:image', image);
+  ensure('property', 'og:site_name', 'Kreatif');
+  ensure('property', 'og:locale', 'en_US');
   ensure('name', 'twitter:card', 'summary_large_image');
+  ensure('name', 'twitter:site', '@kreatif');
   ensure('name', 'twitter:title', opts.title);
   ensure('name', 'twitter:description', opts.description);
   ensure('name', 'twitter:image', image);
@@ -38,7 +41,7 @@ export function setShareMeta(opts: {
 export function resetShareMeta() {
   setShareMeta({
     title: 'Kreatif — Sight & Sound',
-    description: 'Sight & Sound. Original music and visual art on one stage. Estd. 2026.',
+    description: 'Original music and visual art on one stage. Discover pairs, support indie makers. Sight & Sound — Kreatif.',
     url: 'https://kreatif-art.github.io/',
   });
 }

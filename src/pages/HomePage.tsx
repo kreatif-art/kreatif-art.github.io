@@ -203,8 +203,15 @@ export function HomePage() {
               {featuredPairs.map((pair) => (
                 <div
                   key={pair.id}
-                  className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                  className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
                 >
+                  <Link
+                    to={`/pair/${pair.id}`}
+                    className="border-b border-white/[0.06] px-3 py-2 text-[11px] text-orange-200/90 hover:text-orange-100"
+                  >
+                    Open pair · {pair.music?.title} × {pair.art?.title}
+                  </Link>
+                  <div className="flex min-h-0 flex-1">
                   <Link to={`/content/${pair.music_id}`} className="relative w-1/2 overflow-hidden bg-gradient-to-br from-orange-950/90 via-neutral-900 to-neutral-950">
                     {isImageUrl(pair.music?.cover_image_url) ? (
                       <img
@@ -245,6 +252,7 @@ export function HomePage() {
                       Sight
                     </span>
                   </Link>
+                  </div>
                 </div>
               ))}
             </div>

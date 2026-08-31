@@ -121,8 +121,9 @@ export function PairWithButton({ item, onPaired, className }: Props) {
             <h3 className="pr-8 text-lg font-medium text-white">
               Pair “{item.title}” with {needType}
             </h3>
-            <p className="mt-1 text-xs text-neutral-500">
-              Sound &amp; Sight links one track with one artwork. Artist pairs use your own works; curated pairs can link any visible works.
+            <p className="mt-1 text-xs leading-relaxed text-neutral-500">
+              Create a <span className="text-neutral-300">Sound &amp; Sight</span> unit fans can open and share as one link.
+              Use your own works, or curate across the catalog. Add a short note so the pairing feels intentional.
             </p>
 
             {isOwner && (
@@ -197,6 +198,7 @@ export function PairWithButton({ item, onPaired, className }: Props) {
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value.slice(0, 280))}
+                placeholder="Late-night pulse meets neon geometry…"
                 rows={2}
                 placeholder="Why these two belong together…"
                 className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-white/25"
