@@ -33,9 +33,12 @@ export function Footer({ className }: { className?: string }) {
             <Link to="/privacy" className="hover:text-neutral-200">
               Privacy
             </Link>
+            <a href="mailto:kreatif@atomicmail.io" className="hover:text-neutral-200">
+              Contact
+            </a>
           </nav>
           <p className="text-xs text-neutral-500">
-            &copy; {new Date().getFullYear()} Kreatif. All rights reserved.
+            &copy; {new Date().getFullYear()} Kreatif · Jake See
           </p>
         </div>
       </div>

@@ -40,7 +40,7 @@ export function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white">6. Your Rights</h2>
-            <p className="mt-2">You can view and edit your profile at any time. You can delete your uploaded content. To delete your account and associated data, contact <a href="mailto:support@kreatif.app" className="text-orange-400 hover:text-orange-300">support@kreatif.app</a>.</p>
+            <p className="mt-2">You can view and edit your profile at any time. You can delete your uploaded content. To delete your account and associated data, contact <a href="mailto:kreatif@atomicmail.io" className="text-orange-400 hover:text-orange-300">kreatif@atomicmail.io</a>.</p>
           </section>
 
           <section>
@@ -50,7 +50,7 @@ export function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white">8. Contact</h2>
-            <p className="mt-2">Privacy questions? Contact <a href="mailto:support@kreatif.app" className="text-orange-400 hover:text-orange-300">support@kreatif.app</a>.</p>
+            <p className="mt-2">Privacy questions? Contact <a href="mailto:kreatif@atomicmail.io" className="text-orange-400 hover:text-orange-300">kreatif@atomicmail.io</a>.</p>
           </section>
         </div>
       </div>

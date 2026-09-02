@@ -28,7 +28,7 @@ export function TermsPage() {
               <li>A statement that you have a good faith belief the use is unauthorized</li>
               <li>A statement under penalty of perjury that the information is accurate and you are the owner or authorized to act</li>
             </ul>
-            <p className="mt-2">Send takedown requests to: <a href="mailto:dmca@kreatif.app" className="text-orange-400 hover:text-orange-300">dmca@kreatif.app</a>. We will review and respond to valid requests within 72 hours.</p>
+            <p className="mt-2">Send takedown requests to: <a href="mailto:kreatif@atomicmail.io" className="text-orange-400 hover:text-orange-300">kreatif@atomicmail.io</a>. We will review and respond to valid requests within 72 hours.</p>
           </section>
 
           <section>
@@ -53,7 +53,7 @@ export function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white">8. Contact</h2>
-            <p className="mt-2">Questions about these terms? Contact us at <a href="mailto:support@kreatif.app" className="text-orange-400 hover:text-orange-300">support@kreatif.app</a>.</p>
+            <p className="mt-2">Questions about these terms? Contact us at <a href="mailto:kreatif@atomicmail.io" className="text-orange-400 hover:text-orange-300">kreatif@atomicmail.io</a>.</p>
           </section>
         </div>
       </div>
