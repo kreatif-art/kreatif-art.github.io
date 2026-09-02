@@ -154,7 +154,7 @@ export function HomePage() {
         </section>
       )}
 
-      {/* Rising */}
+      {/* Rising — left-aligned; avoid mirrored rail when the shelf is thin */}
       {risingItems.length > 0 && (
         <section className="border-b border-white/[0.06] py-8 sm:py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -170,13 +170,23 @@ export function HomePage() {
                 Leaderboard
               </Link>
             </div>
-            <HorizontalRail tone="art">
-              {risingItems.map((item) => (
-                <div key={item.id} className="w-[9.5rem] shrink-0 sm:w-[11rem]">
-                  <ContentCard item={item} />
-                </div>
-              ))}
-            </HorizontalRail>
+            {risingItems.length >= 5 ? (
+              <HorizontalRail tone="music" sideLabel="RISING">
+                {risingItems.map((item) => (
+                  <div key={item.id} className="w-[9.5rem] shrink-0 sm:w-[11rem]">
+                    <ContentCard item={item} />
+                  </div>
+                ))}
+              </HorizontalRail>
+            ) : (
+              <div className="flex gap-3 overflow-x-auto pb-2 pt-1">
+                {risingItems.map((item) => (
+                  <div key={item.id} className="w-[9.5rem] shrink-0 sm:w-[11rem]">
+                    <ContentCard item={item} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

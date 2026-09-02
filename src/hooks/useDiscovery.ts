@@ -98,10 +98,23 @@ export function useRising(limit = 12) {
       }
 
       const withLikes = await attachLikeCounts(data as unknown as ContentItem[]);
-      withLikes.sort((a, b) => (b.like_count || 0) - (a.like_count || 0) || +new Date(b.created_at) - +new Date(a.created_at));
-      const rising = withLikes.filter((i) => (i.like_count || 0) > 0).slice(0, limit);
-      // If nothing has likes yet, still show recent as a soft rising shelf
-      setItems(rising.length ? rising : withLikes.slice(0, limit));
+      withLikes.sort(
+        (a, b) =>
+          (b.like_count || 0) - (a.like_count || 0) || +new Date(b.created_at) - +new Date(a.created_at),
+      );
+      const liked = withLikes.filter((i) => (i.like_count || 0) > 0);
+      // Prefer liked works; if the shelf would look empty, pad with recent so the row stays full
+      let rising = liked.slice(0, limit);
+      if (rising.length < 4) {
+        const ids = new Set(rising.map((i) => i.id));
+        for (const item of withLikes) {
+          if (rising.length >= Math.min(limit, 8)) break;
+          if (ids.has(item.id)) continue;
+          rising.push(item);
+          ids.add(item.id);
+        }
+      }
+      setItems(rising);
       setLoading(false);
     })();
     return () => {
