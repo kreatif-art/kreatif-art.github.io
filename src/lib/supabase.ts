@@ -7,6 +7,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Check your .env file.');
 }
 
+/** Canonical public site for auth email links (confirm signup, reset password) */
+export const SITE_URL = (import.meta.env.VITE_SITE_URL as string | undefined) || 'https://kreatif-art.github.io';
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
